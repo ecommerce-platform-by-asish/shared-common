@@ -2,6 +2,7 @@ plugins {
     `java-library`
     id("io.spring.dependency-management") version "1.1.7"
     `maven-publish`
+    id("com.diffplug.spotless") version "8.4.0"
 }
 
 java {
@@ -13,6 +14,12 @@ java {
 
 repositories {
     mavenCentral()
+}
+
+spotless {
+    java {
+        googleJavaFormat()
+    }
 }
 
 val springBootVersion = "4.0.5"
@@ -32,4 +39,8 @@ dependencies {
 
 tasks.named("build") {
     finalizedBy("publishToMavenLocal")
+}
+
+tasks.named("check") {
+    dependsOn("spotlessCheck")
 }
