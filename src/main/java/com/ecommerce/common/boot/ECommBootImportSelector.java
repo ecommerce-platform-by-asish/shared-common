@@ -1,5 +1,6 @@
 package com.ecommerce.common.boot;
 
+import com.ecommerce.common.config.OpenApiAutoConfiguration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,10 @@ public class ECommBootImportSelector implements ImportSelector {
         importingClassMetadata.getAnnotationAttributes(ECommBootApplication.class.getName());
 
     List<String> imports = new ArrayList<>();
+
+    if ((boolean) attributes.getOrDefault("enableOpenApi", true)) {
+      imports.add(OpenApiAutoConfiguration.class.getName());
+    }
 
     return imports.toArray(new String[0]);
   }
