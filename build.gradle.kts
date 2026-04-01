@@ -23,6 +23,7 @@ spotless {
 }
 
 val springBootVersion = "4.0.5"
+val springDocVersion = "2.8.6"
 
 dependencyManagement {
     imports {
@@ -35,6 +36,8 @@ dependencies {
     compileOnly("org.springframework.boot:spring-boot-starter-data-jpa")
     compileOnly("org.springframework.boot:spring-boot-starter-validation")
     compileOnly("org.springframework.boot:spring-boot-jackson")
+    compileOnly("org.springdoc:springdoc-openapi-starter-webmvc-ui:${springDocVersion}")
+
     api("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
     testCompileOnly("org.projectlombok:lombok")
