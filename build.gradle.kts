@@ -31,6 +31,8 @@ dependencyManagement {
 }
 
 dependencies {
+    compileOnly("org.springframework.boot:spring-boot-starter-data-jpa")
+    compileOnly("org.springframework.boot:spring-boot-jackson")
     api("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
     testCompileOnly("org.projectlombok:lombok")
