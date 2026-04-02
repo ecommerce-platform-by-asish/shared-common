@@ -38,6 +38,7 @@ dependencies {
     compileOnly("org.springframework.boot:spring-boot-starter-validation")
     compileOnly("org.springframework.boot:spring-boot-jackson")
     compileOnly("org.springdoc:springdoc-openapi-starter-webmvc-ui:${springDocVersion}")
+    compileOnly("org.springframework.boot:spring-boot-starter-data-redis")
 
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
