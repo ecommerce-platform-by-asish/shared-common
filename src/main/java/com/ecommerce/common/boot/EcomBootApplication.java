@@ -6,13 +6,15 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.AliasFor;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @SpringBootApplication
-public @interface ECommBootApplication {
+@Import(EcomBootImportSelector.class)
+public @interface EcomBootApplication {
 
   @AliasFor(annotation = SpringBootApplication.class)
   Class<?>[] exclude() default {};
@@ -27,4 +29,6 @@ public @interface ECommBootApplication {
   Class<?>[] scanBasePackageClasses() default {};
 
   boolean enableOpenApi() default true;
+
+  boolean enableCaching() default false;
 }
