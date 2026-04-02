@@ -14,6 +14,7 @@ java {
 
 repositories {
     mavenCentral()
+    maven { url = uri("https://repo.spring.io/milestone") }
 }
 
 spotless {
@@ -38,10 +39,19 @@ dependencies {
     compileOnly("org.springframework.boot:spring-boot-jackson")
     compileOnly("org.springdoc:springdoc-openapi-starter-webmvc-ui:${springDocVersion}")
 
-    api("org.projectlombok:lombok")
+    compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
     testCompileOnly("org.projectlombok:lombok")
     testAnnotationProcessor("org.projectlombok:lombok")
+}
+
+configurations.all {
+    // Jackson 3.x moved core/databind to tools.jackson — exclude old 2.x artifacts.
+    // jackson-annotations is still com.fasterxml and is needed by Jackson 3.x.
+    exclude(group = "com.fasterxml.jackson.core", module = "jackson-core")
+    exclude(group = "com.fasterxml.jackson.core", module = "jackson-databind")
+    exclude(group = "com.fasterxml.jackson.datatype")
+    exclude(group = "com.fasterxml.jackson.module")
 }
 
 tasks.named("build") {
