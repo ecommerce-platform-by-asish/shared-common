@@ -28,7 +28,9 @@ public @interface EcomBootApplication {
   @AliasFor(annotation = SpringBootApplication.class)
   Class<?>[] scanBasePackageClasses() default {};
 
-  boolean enableOpenApi() default true;
+  boolean enableOpenApi() default false;
+
+  boolean enableActuator() default false;
 
   boolean enableCaching() default false;
 }
