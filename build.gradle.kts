@@ -4,6 +4,10 @@ plugins {
     `maven-publish`
     id("com.diffplug.spotless") version "8.4.0"
 }
+ 
+group = "com.ecommerce"
+version = "1.0.0-SNAPSHOT"
+
 
 java {
     toolchain {
@@ -53,6 +57,14 @@ configurations.all {
     exclude(group = "com.fasterxml.jackson.core", module = "jackson-databind")
     exclude(group = "com.fasterxml.jackson.datatype")
     exclude(group = "com.fasterxml.jackson.module")
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            from(components["java"])
+        }
+    }
 }
 
 tasks.named("build") {
