@@ -8,9 +8,19 @@ public abstract class BaseException extends RuntimeException {
 
   private final HttpStatus httpStatus;
 
+  protected BaseException(String message) {
+    super(message);
+    this.httpStatus = HttpStatus.BAD_REQUEST;
+  }
+
   protected BaseException(String message, HttpStatus httpStatus) {
     super(message);
     this.httpStatus = httpStatus;
+  }
+
+  protected BaseException(String message, Throwable cause) {
+    super(message, cause);
+    this.httpStatus = HttpStatus.BAD_REQUEST;
   }
 
   protected BaseException(String message, HttpStatus httpStatus, Throwable cause) {
