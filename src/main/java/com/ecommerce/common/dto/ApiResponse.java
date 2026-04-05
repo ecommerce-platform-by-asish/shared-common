@@ -1,41 +1,81 @@
 package com.ecommerce.common.dto;
 
+import com.ecommerce.common.exception.ErrorCode;
+import com.ecommerce.common.exception.GlobalErrorCode;
+import com.ecommerce.common.exception.ValidationError;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.Instant;
+import java.util.List;
+import lombok.Builder;
 import lombok.Getter;
 
+/**
+ * Unified Response Wrapper for all API responses. Standardizes success/error reporting using a
+ * success flag and an extensible ErrorCode.
+ */
 @Getter
+@Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponse<T> {
 
   private final boolean success;
+  private final String code;
   private final T data;
   private final String message;
-  private final Instant timestamp = Instant.now();
-
-  private ApiResponse(boolean success, T data, String message) {
-    this.success = success;
-    this.data = data;
-    this.message = message;
-  }
+  private final List<ValidationError> errors;
+  @Builder.Default private final Instant timestamp = Instant.now();
 
   public static <T> ApiResponse<T> ok(T data) {
-    return new ApiResponse<>(true, data, null);
+    return ok(data, GlobalErrorCode.SUCCESS.getMessage());
   }
 
   public static <T> ApiResponse<T> ok(T data, String message) {
-    return new ApiResponse<>(true, data, message);
+    return ApiResponse.<T>builder()
+        .success(true)
+        .code(GlobalErrorCode.SUCCESS.toString())
+        .data(data)
+        .message(message)
+        .build();
   }
 
-  public static <T> ApiResponse<T> ok(String message) {
-    return new ApiResponse<>(true, null, message);
+  public static <T> ApiResponse<T> created(T data, String message) {
+    return ApiResponse.<T>builder()
+        .success(true)
+        .code(GlobalErrorCode.SUCCESS.toString())
+        .data(data)
+        .message(message)
+        .build();
   }
 
-  public static <T> ApiResponse<T> error(String errorMessage) {
-    return new ApiResponse<>(false, null, errorMessage);
+  public static <T> ApiResponse<T> error(ErrorCode errorCode) {
+    return error(errorCode, errorCode.getMessage());
   }
 
-  public static <T> ApiResponse<T> error(T data, String errorMessage) {
-    return new ApiResponse<>(false, data, errorMessage);
+  public static <T> ApiResponse<T> error(ErrorCode errorCode, String message) {
+    return ApiResponse.<T>builder()
+        .success(false)
+        .code(errorCode.toString())
+        .message(message)
+        .build();
+  }
+
+  public static ApiResponse<Void> error(
+      String message, ErrorCode errorCode, List<ValidationError> errors) {
+    return ApiResponse.<Void>builder()
+        .success(false)
+        .code(errorCode.toString())
+        .message(message)
+        .errors(errors)
+        .build();
+  }
+
+  public static <T> ApiResponse<T> error(
+      String message, String code, List<ValidationError> errors) {
+    return ApiResponse.<T>builder()
+        .success(false)
+        .code(code)
+        .message(message)
+        .errors(errors)
+        .build();
   }
 }
