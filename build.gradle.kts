@@ -75,4 +75,3 @@ tasks.named("build") {
 tasks.named("check") {
     dependsOn("spotlessCheck")
 }
-
