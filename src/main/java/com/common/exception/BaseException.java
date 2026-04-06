@@ -1,7 +1,7 @@
 package com.common.exception;
 
 import lombok.Getter;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 
 /** Base exception for the platform, ensuring consistent error reporting across services. */
 @Getter
@@ -29,7 +29,7 @@ public abstract class BaseException extends RuntimeException {
     this.errorCode = errorCode;
   }
 
-  public HttpStatus getHttpStatus() {
+  public HttpStatusCode getStatusCode() {
     return errorCode.getStatus();
   }
 }

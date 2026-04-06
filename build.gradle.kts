@@ -29,9 +29,9 @@ spotless {
 }
 
 val springBootVersion = "4.0.5"
-val springDocVersion = "2.8.6"
+val springDocVersion = "3.0.2"
 val micrometerTracingVersion = "1.6.4"      // resolved from Spring Boot 4.0.5 BOM
-val openTelemetryVersion = "1.55.0"         // resolved from Spring Boot 4.0.5 BOM
+val openTelemetryVersion = "1.60.1"         // resolved from Spring Boot 4.0.5 BOM
 
 dependencyManagement {
     imports {
@@ -82,6 +82,10 @@ publishing {
             from(components["java"])
         }
     }
+}
+
+tasks.withType<JavaCompile> {
+    options.compilerArgs.add("-Xlint:deprecation")
 }
 
 tasks.named("build") {

@@ -4,6 +4,7 @@ package com.common.exception;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 
 @Getter
 @RequiredArgsConstructor
@@ -16,6 +17,6 @@ public enum GlobalStatusCode implements StatusCode {
   SERVICE_UNAVAILABLE(
       HttpStatus.SERVICE_UNAVAILABLE, "The requested service is currently unavailable");
 
-  private final HttpStatus status;
+  private final HttpStatusCode status;
   private final String message;
 }
