@@ -1,4 +1,4 @@
-package com.common.error;
+package com.common.exception;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -7,24 +7,24 @@ import org.springframework.http.HttpStatus;
 @Getter
 public abstract class BaseException extends RuntimeException {
 
-  private final ErrorCode errorCode;
+  private final StatusCode errorCode;
 
-  protected BaseException(ErrorCode errorCode) {
+  protected BaseException(StatusCode errorCode) {
     super(errorCode.getMessage());
     this.errorCode = errorCode;
   }
 
-  protected BaseException(String message, ErrorCode errorCode) {
+  protected BaseException(String message, StatusCode errorCode) {
     super(message);
     this.errorCode = errorCode;
   }
 
-  protected BaseException(String message, ErrorCode errorCode, Throwable cause) {
+  protected BaseException(String message, StatusCode errorCode, Throwable cause) {
     super(message, cause);
     this.errorCode = errorCode;
   }
 
-  protected BaseException(ErrorCode errorCode, Throwable cause) {
+  protected BaseException(StatusCode errorCode, Throwable cause) {
     super(errorCode.getMessage(), cause);
     this.errorCode = errorCode;
   }
