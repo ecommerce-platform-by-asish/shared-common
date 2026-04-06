@@ -1,5 +1,6 @@
-package com.ecommerce.common.constants;
+package com.common.constants;
 
+/** Shared date and time formatting constants. */
 public final class DateTimeConstants {
 
   private DateTimeConstants() {

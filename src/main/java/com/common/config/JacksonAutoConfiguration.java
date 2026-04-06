@@ -1,8 +1,8 @@
-package com.ecommerce.common.config;
+package com.common.config;
 
-import static com.ecommerce.common.constants.DateTimeConstants.DATETIME_FORMAT;
-import static com.ecommerce.common.constants.DateTimeConstants.DATE_FORMAT;
-import static com.ecommerce.common.constants.DateTimeConstants.TIME_FORMAT;
+import static com.common.constants.DateTimeConstants.DATETIME_FORMAT;
+import static com.common.constants.DateTimeConstants.DATE_FORMAT;
+import static com.common.constants.DateTimeConstants.TIME_FORMAT;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -21,6 +21,7 @@ import tools.jackson.databind.ext.javatime.ser.LocalDateTimeSerializer;
 import tools.jackson.databind.ext.javatime.ser.LocalTimeSerializer;
 import tools.jackson.databind.module.SimpleModule;
 
+/** Standard Jackson configuration for consistent JSON processing. */
 @AutoConfiguration
 public class JacksonAutoConfiguration {
 

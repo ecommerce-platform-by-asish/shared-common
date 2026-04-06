@@ -1,1 +1,2 @@
-com.ecommerce.common.exception.GlobalExceptionHandler
+com.common.error.GlobalExceptionHandler
+com.common.config.JacksonAutoConfiguration

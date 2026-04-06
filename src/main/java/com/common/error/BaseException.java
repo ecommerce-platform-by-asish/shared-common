@@ -1,12 +1,9 @@
-package com.ecommerce.common.exception;
+package com.common.error;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
-/**
- * Base class for all domain-specific exceptions. Uses HttpStatus and ErrorCode as the standardized
- * mapping for responses.
- */
+/** Base exception for the platform, ensuring consistent error reporting across services. */
 @Getter
 public abstract class BaseException extends RuntimeException {
 

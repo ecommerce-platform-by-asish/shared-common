@@ -1,18 +1,15 @@
-package com.ecommerce.common.dto;
+package com.common.web.dto;
 
-import com.ecommerce.common.exception.ErrorCode;
-import com.ecommerce.common.exception.GlobalErrorCode;
-import com.ecommerce.common.exception.ValidationError;
+import com.common.error.ErrorCode;
+import com.common.error.GlobalErrorCode;
+import com.common.error.ValidationError;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.Instant;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 
-/**
- * Unified Response Wrapper for all API responses. Standardizes success/error reporting using a
- * success flag and an extensible ErrorCode.
- */
+/** Standardized API response wrapper for all microservice endpoints. */
 @Getter
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)

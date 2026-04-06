@@ -1,4 +1,4 @@
-package com.ecommerce.common.config;
+package com.common.config;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -17,6 +17,7 @@ import tools.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import tools.jackson.databind.jsontype.PolymorphicTypeValidator;
 import tools.jackson.databind.module.SimpleModule;
 
+/** Standard Redis caching configuration for microservices. */
 @Configuration
 @ConditionalOnClass(name = "org.springframework.data.redis.cache.RedisCacheConfiguration")
 @EnableCaching

@@ -1,9 +1,12 @@
-package com.ecommerce.common.exception;
+package com.common.error;
 
+/** Standard error codes shared across all microservices. */
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 @Getter
+@RequiredArgsConstructor
 public enum GlobalErrorCode implements ErrorCode {
   SUCCESS(HttpStatus.OK, "Operation completed successfully"),
   VALIDATION_ERROR(HttpStatus.BAD_REQUEST, "One or more validation errors occurred"),
@@ -13,9 +16,4 @@ public enum GlobalErrorCode implements ErrorCode {
 
   private final HttpStatus status;
   private final String message;
-
-  GlobalErrorCode(HttpStatus status, String message) {
-    this.status = status;
-    this.message = message;
-  }
 }

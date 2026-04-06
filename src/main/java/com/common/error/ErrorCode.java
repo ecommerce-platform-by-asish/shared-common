@@ -1,5 +1,6 @@
-package com.ecommerce.common.exception;
+package com.common.error;
 
+/** Interface defining standard interface for system machine-readable codes. */
 import org.springframework.http.HttpStatus;
 
 /**

@@ -5,8 +5,9 @@ plugins {
     id("com.diffplug.spotless") version "8.4.0"
 }
  
-group = "com.ecommerce"
+group = "com.common"
 version = "1.0.0-SNAPSHOT"
+description = "Core infrastructure library providing base Spring Boot application features, tracing, and observation."
 
 
 java {
@@ -29,6 +30,8 @@ spotless {
 
 val springBootVersion = "4.0.5"
 val springDocVersion = "2.8.6"
+val micrometerTracingVersion = "1.6.4"      // resolved from Spring Boot 4.0.5 BOM
+val openTelemetryVersion = "1.55.0"         // resolved from Spring Boot 4.0.5 BOM
 
 dependencyManagement {
     imports {
@@ -44,6 +47,13 @@ dependencies {
     compileOnly("org.springdoc:springdoc-openapi-starter-webmvc-ui:${springDocVersion}")
     compileOnly("org.springframework.boot:spring-boot-starter-data-redis")
     compileOnly("org.springframework.boot:spring-boot-starter-actuator")
+
+    // OTel tracing — transitive to all consumers via `api` scope
+    // Versions pinned explicitly so Maven metadata validation passes (they come from the BOM)
+    api("io.micrometer:micrometer-observation")
+    api("io.micrometer:micrometer-tracing-bridge-otel:${micrometerTracingVersion}")
+    api("io.opentelemetry:opentelemetry-sdk:${openTelemetryVersion}")
+    api("io.opentelemetry:opentelemetry-sdk-extension-autoconfigure:${openTelemetryVersion}")
 
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
