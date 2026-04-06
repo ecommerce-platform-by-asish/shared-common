@@ -40,20 +40,26 @@ dependencyManagement {
 }
 
 dependencies {
-    compileOnly("org.springframework.boot:spring-boot-starter-web")
+    // Promoted to `api` scope — every service inherits these automatically
+    api("org.springframework.boot:spring-boot-starter-web")
+    api("org.springframework.boot:spring-boot-starter-validation")
+    api("org.springframework.boot:spring-boot-starter-actuator")
+
+    // Optional — only pulled in by services that explicitly need them
+    compileOnly("org.springframework.boot:spring-boot-starter-webflux")
     compileOnly("org.springframework.boot:spring-boot-starter-data-jpa")
-    compileOnly("org.springframework.boot:spring-boot-starter-validation")
     compileOnly("org.springframework.boot:spring-boot-jackson")
     compileOnly("org.springdoc:springdoc-openapi-starter-webmvc-ui:${springDocVersion}")
     compileOnly("org.springframework.boot:spring-boot-starter-data-redis")
-    compileOnly("org.springframework.boot:spring-boot-starter-actuator")
 
     // OTel tracing — transitive to all consumers via `api` scope
     // Versions pinned explicitly so Maven metadata validation passes (they come from the BOM)
     api("io.micrometer:micrometer-observation")
+    api("io.micrometer:micrometer-tracing")
     api("io.micrometer:micrometer-tracing-bridge-otel:${micrometerTracingVersion}")
     api("io.opentelemetry:opentelemetry-sdk:${openTelemetryVersion}")
     api("io.opentelemetry:opentelemetry-sdk-extension-autoconfigure:${openTelemetryVersion}")
+    api("io.opentelemetry:opentelemetry-exporter-logging")
 
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")

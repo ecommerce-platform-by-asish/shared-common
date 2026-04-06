@@ -1,2 +1,1 @@
-com.common.error.GlobalExceptionHandler
-com.common.config.JacksonAutoConfiguration
+com.common.config.TracingAutoConfiguration
