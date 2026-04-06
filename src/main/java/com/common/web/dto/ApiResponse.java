@@ -1,8 +1,8 @@
 package com.common.web.dto;
 
-import com.common.error.ErrorCode;
-import com.common.error.GlobalErrorCode;
-import com.common.error.ValidationError;
+import com.common.exception.GlobalStatusCode;
+import com.common.exception.StatusCode;
+import com.common.exception.ValidationError;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.Instant;
 import java.util.List;
@@ -23,13 +23,13 @@ public class ApiResponse<T> {
   @Builder.Default private final Instant timestamp = Instant.now();
 
   public static <T> ApiResponse<T> ok(T data) {
-    return ok(data, GlobalErrorCode.SUCCESS.getMessage());
+    return ok(data, GlobalStatusCode.SUCCESS.getMessage());
   }
 
   public static <T> ApiResponse<T> ok(T data, String message) {
     return ApiResponse.<T>builder()
         .success(true)
-        .code(GlobalErrorCode.SUCCESS.toString())
+        .code(GlobalStatusCode.SUCCESS.toString())
         .data(data)
         .message(message)
         .build();
@@ -38,17 +38,17 @@ public class ApiResponse<T> {
   public static <T> ApiResponse<T> created(T data, String message) {
     return ApiResponse.<T>builder()
         .success(true)
-        .code(GlobalErrorCode.SUCCESS.toString())
+        .code(GlobalStatusCode.SUCCESS.toString())
         .data(data)
         .message(message)
         .build();
   }
 
-  public static <T> ApiResponse<T> error(ErrorCode errorCode) {
+  public static <T> ApiResponse<T> error(StatusCode errorCode) {
     return error(errorCode, errorCode.getMessage());
   }
 
-  public static <T> ApiResponse<T> error(ErrorCode errorCode, String message) {
+  public static <T> ApiResponse<T> error(StatusCode errorCode, String message) {
     return ApiResponse.<T>builder()
         .success(false)
         .code(errorCode.toString())
@@ -57,7 +57,7 @@ public class ApiResponse<T> {
   }
 
   public static ApiResponse<Void> error(
-      String message, ErrorCode errorCode, List<ValidationError> errors) {
+      String message, StatusCode errorCode, List<ValidationError> errors) {
     return ApiResponse.<Void>builder()
         .success(false)
         .code(errorCode.toString())
