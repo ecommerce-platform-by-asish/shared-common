@@ -1,6 +1,6 @@
-package com.common.exception;
+package com.app.common.exception;
 
-import com.common.web.dto.ApiResponse;
+import com.app.common.web.dto.ApiResponse;
 import jakarta.validation.ConstraintViolationException;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;

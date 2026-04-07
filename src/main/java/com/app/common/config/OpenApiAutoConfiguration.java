@@ -1,4 +1,4 @@
-package com.common.config;
+package com.app.common.config;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -39,7 +39,7 @@ public class OpenApiAutoConfiguration {
                 .contact(
                     new Contact()
                         .name("Common Platform")
-                        .url("https://github.com/ecommerce-platform-by-asish"))
+                        .url("https://github.com.app-platform-by-asish"))
                 .license(new License().name("MIT").url("https://opensource.org/licenses/MIT")))
         .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_NAME))
         .components(

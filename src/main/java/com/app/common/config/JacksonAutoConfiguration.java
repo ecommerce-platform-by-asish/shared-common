@@ -1,8 +1,8 @@
-package com.common.config;
+package com.app.common.config;
 
-import static com.common.constants.DateTimeConstants.DATETIME_FORMAT;
-import static com.common.constants.DateTimeConstants.DATE_FORMAT;
-import static com.common.constants.DateTimeConstants.TIME_FORMAT;
+import static com.app.common.constants.DateTimeConstants.DATETIME_FORMAT;
+import static com.app.common.constants.DateTimeConstants.DATE_FORMAT;
+import static com.app.common.constants.DateTimeConstants.TIME_FORMAT;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;

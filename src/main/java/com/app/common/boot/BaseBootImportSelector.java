@@ -1,9 +1,9 @@
-package com.common.boot;
+package com.app.common.boot;
 
-import com.common.config.ActuatorAutoConfiguration;
-import com.common.config.OpenApiAutoConfiguration;
-import com.common.config.RedisCacheAutoConfiguration;
-import com.common.config.TracingAutoConfiguration;
+import com.app.common.config.ActuatorAutoConfiguration;
+import com.app.common.config.OpenApiAutoConfiguration;
+import com.app.common.config.RedisCacheAutoConfiguration;
+import com.app.common.config.TracingAutoConfiguration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

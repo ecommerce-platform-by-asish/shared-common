@@ -1,4 +1,4 @@
-package com.common.web.filter;
+package com.app.common.web.filter;
 
 import io.micrometer.observation.Observation;
 import io.micrometer.observation.ObservationRegistry;

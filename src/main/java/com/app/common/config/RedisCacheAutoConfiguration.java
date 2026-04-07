@@ -1,4 +1,4 @@
-package com.common.config;
+package com.app.common.config;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;

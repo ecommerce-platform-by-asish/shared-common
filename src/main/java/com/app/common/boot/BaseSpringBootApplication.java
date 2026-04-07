@@ -1,4 +1,4 @@
-package com.common.boot;
+package com.app.common.boot;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;

@@ -5,7 +5,7 @@ plugins {
     id("com.diffplug.spotless") version "8.4.0"
 }
  
-group = "com.common"
+group = "com.app"
 version = "1.0.0-SNAPSHOT"
 description = "Core infrastructure library providing base Spring Boot application features, tracing, and observation."
 

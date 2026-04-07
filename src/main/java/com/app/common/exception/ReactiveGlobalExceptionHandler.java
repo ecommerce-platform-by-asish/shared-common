@@ -1,6 +1,6 @@
-package com.common.exception;
+package com.app.common.exception;
 
-import com.common.web.dto.ApiResponse;
+import com.app.common.web.dto.ApiResponse;
 import jakarta.annotation.PostConstruct;
 import java.net.ConnectException;
 import lombok.extern.slf4j.Slf4j;
