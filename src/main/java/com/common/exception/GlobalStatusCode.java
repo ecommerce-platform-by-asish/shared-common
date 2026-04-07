@@ -1,11 +1,11 @@
 package com.common.exception;
 
-/** Standard error codes shared across all microservices. */
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 
+/** Standard error codes shared across all microservices. */
 @Getter
 @RequiredArgsConstructor
 public enum GlobalStatusCode implements StatusCode {

@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatusCode;
 @Getter
 public abstract class BaseException extends RuntimeException {
 
+  private static final long serialVersionUID = 1L;
+
   private final StatusCode errorCode;
 
   protected BaseException(StatusCode errorCode) {

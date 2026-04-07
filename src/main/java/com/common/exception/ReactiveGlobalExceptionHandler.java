@@ -1,6 +1,7 @@
 package com.common.exception;
 
 import com.common.web.dto.ApiResponse;
+import jakarta.annotation.PostConstruct;
 import java.net.ConnectException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -12,7 +13,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerCodecConfigurer;
-import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.RequestPredicates;
 import org.springframework.web.reactive.function.server.RouterFunction;
@@ -27,10 +27,11 @@ import reactor.core.publisher.Mono;
  * java.net.ConnectException if a route target is down.
  */
 @Slf4j
-@Component
 @Order(-2) // Before DefaultErrorWebExceptionHandler
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 public class ReactiveGlobalExceptionHandler extends AbstractErrorWebExceptionHandler {
+
+  private final ServerCodecConfigurer serverCodecConfigurer;
 
   public ReactiveGlobalExceptionHandler(
       ErrorAttributes errorAttributes,
@@ -38,6 +39,11 @@ public class ReactiveGlobalExceptionHandler extends AbstractErrorWebExceptionHan
       ApplicationContext applicationContext,
       ServerCodecConfigurer serverCodecConfigurer) {
     super(errorAttributes, webProperties.getResources(), applicationContext);
+    this.serverCodecConfigurer = serverCodecConfigurer;
+  }
+
+  @PostConstruct
+  public void init() {
     this.setMessageWriters(serverCodecConfigurer.getWriters());
     this.setMessageReaders(serverCodecConfigurer.getReaders());
   }
@@ -55,7 +61,10 @@ public class ReactiveGlobalExceptionHandler extends AbstractErrorWebExceptionHan
     GlobalStatusCode statusCode = GlobalStatusCode.INTERNAL_SERVER_ERROR;
 
     if (error instanceof ConnectException
-        || (error.getCause() != null && error.getCause() instanceof ConnectException)) {
+        || (error.getCause() != null && error.getCause() instanceof ConnectException)
+        || error.getClass().getName().contains("AnnotatedConnectException")
+        || (error.getCause() != null
+            && error.getCause().getClass().getName().contains("AnnotatedConnectException"))) {
       statusCode = GlobalStatusCode.SERVICE_UNAVAILABLE;
     }
 

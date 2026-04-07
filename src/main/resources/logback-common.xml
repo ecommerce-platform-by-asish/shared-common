@@ -17,6 +17,14 @@
     </encoder>
   </appender>
 
+  <logger name="org.springframework.boot.actuate.autoconfigure.tracing" level="INFO"/>
+  <logger name="com.common.config" level="INFO"/>
+  <logger name="org.springframework.web" level="INFO"/>
+  <logger name="com.ecommerce" level="DEBUG"/>
+
+  <!-- P6Spy Inlined SQL Log Formatting -->
+  <logger name="p6spy" level="DEBUG"/>
+
   <root level="INFO">
     <appender-ref ref="CONSOLE"/>
   </root>

@@ -88,7 +88,8 @@ publishing {
 }
 
 tasks.withType<JavaCompile> {
-    options.compilerArgs.add("-Xlint:deprecation")
+    options.compilerArgs.add("-Xlint:all")
+    options.compilerArgs.add("-Xlint:-processing") // suppress lombok annotation processor warnings if any
 }
 
 tasks.named("build") {
