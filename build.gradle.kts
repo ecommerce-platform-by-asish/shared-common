@@ -6,7 +6,7 @@ plugins {
 }
  
 group = "com.common"
-version = "1.0.8-SNAPSHOT"
+version = "1.0.0-SNAPSHOT"
 description = "Core infrastructure library providing base Spring Boot application features, tracing, and observation."
 
 java {
