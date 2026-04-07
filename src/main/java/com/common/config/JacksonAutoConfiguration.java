@@ -4,6 +4,7 @@ import static com.common.constants.DateTimeConstants.DATETIME_FORMAT;
 import static com.common.constants.DateTimeConstants.DATE_FORMAT;
 import static com.common.constants.DateTimeConstants.TIME_FORMAT;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -29,7 +30,7 @@ public class JacksonAutoConfiguration {
   public JsonMapperBuilderCustomizer jacksonCustomizer() {
     return builder -> {
       builder.addModule(createJavaTimeModule());
-      builder.defaultDateFormat(new java.text.SimpleDateFormat(DATETIME_FORMAT));
+      builder.defaultDateFormat(new SimpleDateFormat(DATETIME_FORMAT));
       builder.defaultTimeZone(TimeZone.getTimeZone("UTC"));
       builder.disable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS);
     };

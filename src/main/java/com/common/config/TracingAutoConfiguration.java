@@ -17,6 +17,7 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.Ordered;
 
 /** Common tracing and observation configuration. */
 @Slf4j
@@ -49,7 +50,7 @@ public class TracingAutoConfiguration {
     }
     var registrationBean =
         new FilterRegistrationBean<>(new TraceIdResponseFilter(tracer, observationRegistry));
-    registrationBean.setOrder(org.springframework.core.Ordered.HIGHEST_PRECEDENCE);
+    registrationBean.setOrder(Ordered.HIGHEST_PRECEDENCE);
     return registrationBean;
   }
 

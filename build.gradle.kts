@@ -88,8 +88,7 @@ publishing {
 }
 
 tasks.withType<JavaCompile> {
-    options.compilerArgs.add("-Xlint:all")
-    options.compilerArgs.add("-Xlint:-processing") // suppress lombok annotation processor warnings if any
+    options.compilerArgs.addAll(listOf("-Xlint:all", "-Xlint:-serial", "-Xlint:-processing"))
 }
 
 tasks.named("build") {
