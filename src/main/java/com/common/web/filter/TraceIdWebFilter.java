@@ -40,13 +40,13 @@ public class TraceIdWebFilter implements WebFilter, Ordered {
           observation.start();
           try (Observation.Scope _ = observation.openScope()) {
             var currentSpan = tracer.currentSpan();
-            if (currentSpan != null && currentSpan.context() != null) {
+            if (currentSpan != null) {
               String traceId = currentSpan.context().traceId();
               exchange.getResponse().getHeaders().add("X-Trace-Id", traceId);
               // Note: MDC in WebFlux requires additional bridging (e.g. ContextSnapshot)
               // but we are primarily verifying Servlet services for now.
             }
-            return chain.filter(exchange).doFinally(signal -> observation.stop());
+            return chain.filter(exchange).doFinally(_ -> observation.stop());
           }
         });
   }

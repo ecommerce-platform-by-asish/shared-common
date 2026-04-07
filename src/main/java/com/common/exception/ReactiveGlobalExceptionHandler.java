@@ -4,6 +4,7 @@ import com.common.web.dto.ApiResponse;
 import jakarta.annotation.PostConstruct;
 import java.net.ConnectException;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.webflux.autoconfigure.error.AbstractErrorWebExceptionHandler;
@@ -49,12 +50,20 @@ public class ReactiveGlobalExceptionHandler extends AbstractErrorWebExceptionHan
   }
 
   @Override
-  protected RouterFunction<ServerResponse> getRoutingFunction(ErrorAttributes errorAttributes) {
+  protected RouterFunction<ServerResponse> getRoutingFunction(
+      @NonNull ErrorAttributes errorAttributes) {
     return RouterFunctions.route(RequestPredicates.all(), this::renderErrorResponse);
   }
 
-  private Mono<ServerResponse> renderErrorResponse(ServerRequest request) {
+  private Mono<ServerResponse> renderErrorResponse(@NonNull ServerRequest request) {
     Throwable error = getError(request);
+
+    if (error == null) {
+      return ServerResponse.status(HttpStatus.OK)
+          .contentType(MediaType.APPLICATION_JSON)
+          .body(BodyInserters.fromValue(ApiResponse.error(GlobalStatusCode.INTERNAL_SERVER_ERROR)));
+    }
+
     log.error(
         "Unhandled WebFlux {} at path: {}", error.getClass().getName(), request.path(), error);
 

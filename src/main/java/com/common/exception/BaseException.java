@@ -1,5 +1,6 @@
 package com.common.exception;
 
+import java.io.Serial;
 import lombok.Getter;
 import org.springframework.http.HttpStatusCode;
 
@@ -7,7 +8,7 @@ import org.springframework.http.HttpStatusCode;
 @Getter
 public abstract class BaseException extends RuntimeException {
 
-  private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
 
   private final StatusCode errorCode;
 

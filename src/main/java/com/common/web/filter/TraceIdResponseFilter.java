@@ -37,7 +37,7 @@ public class TraceIdResponseFilter extends OncePerRequestFilter {
 
     try (Observation.Scope _ = observation.openScope()) {
       var currentSpan = tracer.currentSpan();
-      if (currentSpan != null && currentSpan.context() != null) {
+      if (currentSpan != null) {
         String traceId = currentSpan.context().traceId();
         String spanId = currentSpan.context().spanId();
 
