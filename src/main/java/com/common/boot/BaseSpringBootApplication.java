@@ -1,4 +1,4 @@
-package com.ecommerce.common.boot;
+package com.common.boot;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
@@ -9,12 +9,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.AliasFor;
 
+/** Base annotation providing unified configuration for all microservices. */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @SpringBootApplication
-@Import(EcomBootImportSelector.class)
-public @interface EcomBootApplication {
+@Import(BaseBootImportSelector.class)
+public @interface BaseSpringBootApplication {
 
   @AliasFor(annotation = SpringBootApplication.class)
   Class<?>[] exclude() default {};

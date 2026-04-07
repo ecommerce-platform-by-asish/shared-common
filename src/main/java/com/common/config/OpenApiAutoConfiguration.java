@@ -1,4 +1,4 @@
-package com.ecommerce.common.config;
+package com.common.config;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -12,11 +12,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/** Unified OpenAPI/Swagger configuration for API documentation. */
 @Configuration
 @ConditionalOnClass(name = "org.springdoc.core.models.GroupedOpenApi")
 public class OpenApiAutoConfiguration {
 
-  @Value("${app.openapi.title:Ecommerce Service API}")
+  @Value("${app.openapi.title:Common Service API}")
   private String title;
 
   @Value("${app.openapi.description:Microservice API}")
@@ -37,7 +38,7 @@ public class OpenApiAutoConfiguration {
                 .version(version)
                 .contact(
                     new Contact()
-                        .name("Ecommerce Platform")
+                        .name("Common Platform")
                         .url("https://github.com/ecommerce-platform-by-asish"))
                 .license(new License().name("MIT").url("https://opensource.org/licenses/MIT")))
         .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_NAME))

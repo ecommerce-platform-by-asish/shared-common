@@ -1,8 +1,9 @@
-package com.ecommerce.common.dto;
+package com.common.web.dto;
 
 import java.util.List;
 import org.springframework.data.domain.Page;
 
+/** Standard wrapper for paginated API responses. */
 public record PageResponse<T>(
     List<T> content,
     int pageNumber,

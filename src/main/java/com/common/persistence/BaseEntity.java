@@ -1,4 +1,4 @@
-package com.ecommerce.common.jpa;
+package com.common.persistence;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
@@ -22,6 +22,7 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+/** Base auditing entity for all persistent domain models. */
 @Getter
 @Setter
 @MappedSuperclass

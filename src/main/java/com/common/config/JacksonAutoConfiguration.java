@@ -1,9 +1,10 @@
-package com.ecommerce.common.config;
+package com.common.config;
 
-import static com.ecommerce.common.constants.DateTimeConstants.DATETIME_FORMAT;
-import static com.ecommerce.common.constants.DateTimeConstants.DATE_FORMAT;
-import static com.ecommerce.common.constants.DateTimeConstants.TIME_FORMAT;
+import static com.common.constants.DateTimeConstants.DATETIME_FORMAT;
+import static com.common.constants.DateTimeConstants.DATE_FORMAT;
+import static com.common.constants.DateTimeConstants.TIME_FORMAT;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -21,6 +22,7 @@ import tools.jackson.databind.ext.javatime.ser.LocalDateTimeSerializer;
 import tools.jackson.databind.ext.javatime.ser.LocalTimeSerializer;
 import tools.jackson.databind.module.SimpleModule;
 
+/** Standard Jackson configuration for consistent JSON processing. */
 @AutoConfiguration
 public class JacksonAutoConfiguration {
 
@@ -28,7 +30,7 @@ public class JacksonAutoConfiguration {
   public JsonMapperBuilderCustomizer jacksonCustomizer() {
     return builder -> {
       builder.addModule(createJavaTimeModule());
-      builder.defaultDateFormat(new java.text.SimpleDateFormat(DATETIME_FORMAT));
+      builder.defaultDateFormat(new SimpleDateFormat(DATETIME_FORMAT));
       builder.defaultTimeZone(TimeZone.getTimeZone("UTC"));
       builder.disable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS);
     };

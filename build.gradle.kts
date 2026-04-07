@@ -5,9 +5,9 @@ plugins {
     id("com.diffplug.spotless") version "8.4.0"
 }
  
-group = "com.ecommerce"
+group = "com.common"
 version = "1.0.0-SNAPSHOT"
-
+description = "Core infrastructure library providing base Spring Boot application features, tracing, and observation."
 
 java {
     toolchain {
@@ -28,7 +28,7 @@ spotless {
 }
 
 val springBootVersion = "4.0.5"
-val springDocVersion = "2.8.6"
+val springDocVersion = "3.0.2"
 
 dependencyManagement {
     imports {
@@ -37,13 +37,32 @@ dependencyManagement {
 }
 
 dependencies {
+    // Platform Infrastructure — every service inherits these automatically
+    api("org.springframework.boot:spring-boot-starter")
+    api("org.springframework.boot:spring-boot-starter-validation")
+    api("org.springframework.boot:spring-boot-starter-actuator")
+
+    // Optional Selective Stacks — must be explicitly added by the service
     compileOnly("org.springframework.boot:spring-boot-starter-web")
+    compileOnly("org.springframework.boot:spring-boot-starter-webflux")
     compileOnly("org.springframework.boot:spring-boot-starter-data-jpa")
-    compileOnly("org.springframework.boot:spring-boot-starter-validation")
     compileOnly("org.springframework.boot:spring-boot-jackson")
     compileOnly("org.springdoc:springdoc-openapi-starter-webmvc-ui:${springDocVersion}")
     compileOnly("org.springframework.boot:spring-boot-starter-data-redis")
-    compileOnly("org.springframework.boot:spring-boot-starter-actuator")
+
+    // OTel tracing — transitive to all consumers via `api` scope
+    api("org.springframework.boot:spring-boot-starter-opentelemetry")
+    api("io.micrometer:micrometer-observation")
+    api("io.micrometer:micrometer-tracing")
+    api("io.micrometer:micrometer-tracing-bridge-otel")
+    api("io.micrometer:context-propagation")
+    
+    // Additional OTel exporters pulled in for customization
+    api("io.opentelemetry:opentelemetry-exporter-logging")
+    api("io.opentelemetry:opentelemetry-exporter-otlp")
+
+    // SQL Log Formatting and Inlined Value Tracing
+    api("com.github.gavlyukovskiy:p6spy-spring-boot-starter:2.0.0")
 
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
@@ -66,6 +85,10 @@ publishing {
             from(components["java"])
         }
     }
+}
+
+tasks.withType<JavaCompile> {
+    options.compilerArgs.addAll(listOf("-Xlint:all", "-Xlint:-serial", "-Xlint:-processing"))
 }
 
 tasks.named("build") {

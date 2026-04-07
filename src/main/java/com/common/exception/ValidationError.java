@@ -1,3 +1,4 @@
-package com.ecommerce.common.exception;
+package com.common.exception;
 
+/** Single field validation error detail. */
 public record ValidationError(String field, String message, Object rejectedValue) {}
