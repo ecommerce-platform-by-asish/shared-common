@@ -1,5 +1,7 @@
 package com.common.web.filter;
 
+import io.micrometer.observation.Observation;
+import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.tracing.Tracer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +18,7 @@ import reactor.core.publisher.Mono;
 public class TraceIdWebFilter implements WebFilter, Ordered {
 
   private final Tracer tracer;
+  private final ObservationRegistry observationRegistry;
 
   @Override
   public int getOrder() {
@@ -25,17 +28,26 @@ public class TraceIdWebFilter implements WebFilter, Ordered {
   @Override
   @NonNull
   public Mono<Void> filter(@NonNull ServerWebExchange exchange, @NonNull WebFilterChain chain) {
-    return chain
-        .filter(exchange)
-        .contextWrite(
-            context -> {
-              // Extract traceId from Micrometer Tracing
-              var currentSpan = tracer.currentSpan();
-              if (currentSpan != null && currentSpan.context() != null) {
-                String traceId = currentSpan.context().traceId();
-                exchange.getResponse().getHeaders().add("X-Trace-Id", traceId);
-              }
-              return context;
-            });
+    Observation observation =
+        Observation.createNotStarted("http.server.requests", observationRegistry)
+            .contextualName(
+                exchange.getRequest().getMethod() + " " + exchange.getRequest().getURI().getPath())
+            .lowCardinalityKeyValue("http.method", exchange.getRequest().getMethod().name())
+            .lowCardinalityKeyValue("http.url", exchange.getRequest().getURI().getPath());
+
+    return Mono.defer(
+        () -> {
+          observation.start();
+          try (Observation.Scope _ = observation.openScope()) {
+            var currentSpan = tracer.currentSpan();
+            if (currentSpan != null && currentSpan.context() != null) {
+              String traceId = currentSpan.context().traceId();
+              exchange.getResponse().getHeaders().add("X-Trace-Id", traceId);
+              // Note: MDC in WebFlux requires additional bridging (e.g. ContextSnapshot)
+              // but we are primarily verifying Servlet services for now.
+            }
+            return chain.filter(exchange).doFinally(signal -> observation.stop());
+          }
+        });
   }
 }
