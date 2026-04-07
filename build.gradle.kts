@@ -6,9 +6,8 @@ plugins {
 }
  
 group = "com.common"
-version = "1.0.0-SNAPSHOT"
+version = "1.0.8-SNAPSHOT"
 description = "Core infrastructure library providing base Spring Boot application features, tracing, and observation."
-
 
 java {
     toolchain {
@@ -30,8 +29,6 @@ spotless {
 
 val springBootVersion = "4.0.5"
 val springDocVersion = "3.0.2"
-val micrometerTracingVersion = "1.6.4"      // resolved from Spring Boot 4.0.5 BOM
-val openTelemetryVersion = "1.60.1"         // resolved from Spring Boot 4.0.5 BOM
 
 dependencyManagement {
     imports {
@@ -40,12 +37,13 @@ dependencyManagement {
 }
 
 dependencies {
-    // Promoted to `api` scope — every service inherits these automatically
-    api("org.springframework.boot:spring-boot-starter-web")
+    // Platform Infrastructure — every service inherits these automatically
+    api("org.springframework.boot:spring-boot-starter")
     api("org.springframework.boot:spring-boot-starter-validation")
     api("org.springframework.boot:spring-boot-starter-actuator")
 
-    // Optional — only pulled in by services that explicitly need them
+    // Optional Selective Stacks — must be explicitly added by the service
+    compileOnly("org.springframework.boot:spring-boot-starter-web")
     compileOnly("org.springframework.boot:spring-boot-starter-webflux")
     compileOnly("org.springframework.boot:spring-boot-starter-data-jpa")
     compileOnly("org.springframework.boot:spring-boot-jackson")
@@ -53,13 +51,18 @@ dependencies {
     compileOnly("org.springframework.boot:spring-boot-starter-data-redis")
 
     // OTel tracing — transitive to all consumers via `api` scope
-    // Versions pinned explicitly so Maven metadata validation passes (they come from the BOM)
+    api("org.springframework.boot:spring-boot-starter-opentelemetry")
     api("io.micrometer:micrometer-observation")
     api("io.micrometer:micrometer-tracing")
-    api("io.micrometer:micrometer-tracing-bridge-otel:${micrometerTracingVersion}")
-    api("io.opentelemetry:opentelemetry-sdk:${openTelemetryVersion}")
-    api("io.opentelemetry:opentelemetry-sdk-extension-autoconfigure:${openTelemetryVersion}")
+    api("io.micrometer:micrometer-tracing-bridge-otel")
+    api("io.micrometer:context-propagation")
+    
+    // Additional OTel exporters pulled in for customization
     api("io.opentelemetry:opentelemetry-exporter-logging")
+    api("io.opentelemetry:opentelemetry-exporter-otlp")
+
+    // SQL Log Formatting and Inlined Value Tracing
+    api("com.github.gavlyukovskiy:p6spy-spring-boot-starter:2.0.0")
 
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
