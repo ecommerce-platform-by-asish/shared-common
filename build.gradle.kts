@@ -61,9 +61,6 @@ dependencies {
     api("io.opentelemetry:opentelemetry-exporter-logging")
     api("io.opentelemetry:opentelemetry-exporter-otlp")
 
-    // SQL Log Formatting and Inlined Value Tracing
-    api("com.github.gavlyukovskiy:p6spy-spring-boot-starter:2.0.0")
-
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
     testCompileOnly("org.projectlombok:lombok")
@@ -83,6 +80,14 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             from(components["java"])
+            versionMapping {
+                usage("java-api") {
+                    fromResolutionOf("runtimeClasspath")
+                }
+                usage("java-runtime") {
+                    fromResolutionOf("runtimeClasspath")
+                }
+            }
         }
     }
 }
