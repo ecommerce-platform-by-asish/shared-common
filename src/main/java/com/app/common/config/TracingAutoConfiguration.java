@@ -4,11 +4,9 @@ import com.app.common.web.filter.TraceIdResponseFilter;
 import com.app.common.web.filter.TraceIdWebFilter;
 import io.micrometer.observation.Observation;
 import io.micrometer.observation.ObservationHandler;
-import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.tracing.Tracer;
 import io.micrometer.tracing.handler.DefaultTracingObservationHandler;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -45,16 +43,9 @@ public class TracingAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(name = "traceIdResponseFilter")
-    public FilterRegistrationBean<TraceIdResponseFilter> traceIdResponseFilter(
-        ObjectProvider<Tracer> tracerProvider, ObservationRegistry observationRegistry) {
-      Tracer tracer = tracerProvider.getIfAvailable();
-      if (tracer == null) {
-        log.warn("Tracer bean NOT found for TraceIdResponseFilter. Tracing will be disabled.");
-        return null;
-      }
-      var registrationBean =
-          new FilterRegistrationBean<>(new TraceIdResponseFilter(tracer, observationRegistry));
-      registrationBean.setOrder(Ordered.HIGHEST_PRECEDENCE);
+    public FilterRegistrationBean<TraceIdResponseFilter> traceIdResponseFilter(Tracer tracer) {
+      var registrationBean = new FilterRegistrationBean<>(new TraceIdResponseFilter(tracer));
+      registrationBean.setOrder(Ordered.LOWEST_PRECEDENCE);
       return registrationBean;
     }
   }
@@ -67,14 +58,8 @@ public class TracingAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(name = "traceIdWebFilter")
-    public TraceIdWebFilter traceIdWebFilter(
-        ObjectProvider<Tracer> tracerProvider, ObservationRegistry observationRegistry) {
-      Tracer tracer = tracerProvider.getIfAvailable();
-      if (tracer == null) {
-        log.warn("Tracer bean NOT found for TraceIdWebFilter. Tracing will be disabled.");
-        return null;
-      }
-      return new TraceIdWebFilter(tracer, observationRegistry);
+    public TraceIdWebFilter traceIdWebFilter(Tracer tracer) {
+      return new TraceIdWebFilter(tracer);
     }
   }
 }
