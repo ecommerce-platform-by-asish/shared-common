@@ -1,4 +1,4 @@
-package com.common.config;
+package com.app.common.config;
 
 import jakarta.annotation.PostConstruct;
 import org.jspecify.annotations.NullMarked;

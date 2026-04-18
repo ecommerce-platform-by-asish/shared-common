@@ -1,4 +1,4 @@
-package com.common.constants;
+package com.app.common.constants;
 
 /** Shared date and time formatting constants. */
 public final class DateTimeConstants {

@@ -1,8 +1,8 @@
-package com.common.web.dto;
+package com.app.common.web.dto;
 
-import com.common.exception.GlobalStatusCode;
-import com.common.exception.StatusCode;
-import com.common.exception.ValidationError;
+import com.app.common.exception.GlobalStatusCode;
+import com.app.common.exception.StatusCode;
+import com.app.common.exception.ValidationError;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.Instant;
 import java.util.List;

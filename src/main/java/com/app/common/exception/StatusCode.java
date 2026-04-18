@@ -1,4 +1,4 @@
-package com.common.exception;
+package com.app.common.exception;
 
 import java.io.Serializable;
 import org.springframework.http.HttpStatusCode;

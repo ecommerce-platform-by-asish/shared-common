@@ -1,14 +1,12 @@
-package com.common.config;
+package com.app.common.config;
 
-import com.common.web.filter.TraceIdResponseFilter;
-import com.common.web.filter.TraceIdWebFilter;
+import com.app.common.web.filter.TraceIdResponseFilter;
+import com.app.common.web.filter.TraceIdWebFilter;
 import io.micrometer.observation.Observation;
 import io.micrometer.observation.ObservationHandler;
-import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.tracing.Tracer;
 import io.micrometer.tracing.handler.DefaultTracingObservationHandler;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -37,35 +35,31 @@ public class TracingAutoConfiguration {
     log.info("Initializing TracingAutoConfiguration...");
   }
 
-  @Bean
-  @ConditionalOnMissingBean(name = "traceIdResponseFilter")
+  /** Tracing configuration for Servlet-based applications. */
+  @Configuration(proxyBeanMethods = false)
   @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-  @ConditionalOnClass(name = "jakarta.servlet.Filter")
-  public FilterRegistrationBean<TraceIdResponseFilter> traceIdResponseFilter(
-      ObjectProvider<Tracer> tracerProvider, ObservationRegistry observationRegistry) {
-    Tracer tracer = tracerProvider.getIfAvailable();
-    if (tracer == null) {
-      log.warn("Tracer bean NOT found for TraceIdResponseFilter. Tracing will be disabled.");
-      return null;
+  @ConditionalOnClass(name = "org.springframework.boot.web.servlet.FilterRegistrationBean")
+  static class ServletTracingConfiguration {
+
+    @Bean
+    @ConditionalOnMissingBean(name = "traceIdResponseFilter")
+    public FilterRegistrationBean<TraceIdResponseFilter> traceIdResponseFilter(Tracer tracer) {
+      var registrationBean = new FilterRegistrationBean<>(new TraceIdResponseFilter(tracer));
+      registrationBean.setOrder(Ordered.LOWEST_PRECEDENCE);
+      return registrationBean;
     }
-    var registrationBean =
-        new FilterRegistrationBean<>(new TraceIdResponseFilter(tracer, observationRegistry));
-    registrationBean.setOrder(Ordered.HIGHEST_PRECEDENCE);
-    return registrationBean;
   }
 
-  /** Registers reactive filter for traceId response headers. */
-  @Bean
-  @ConditionalOnMissingBean(name = "traceIdWebFilter")
+  /** Tracing configuration for Reactive (WebFlux) applications. */
+  @Configuration(proxyBeanMethods = false)
   @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
   @ConditionalOnClass(name = "org.springframework.web.server.WebFilter")
-  public TraceIdWebFilter traceIdWebFilter(
-      ObjectProvider<Tracer> tracerProvider, ObservationRegistry observationRegistry) {
-    Tracer tracer = tracerProvider.getIfAvailable();
-    if (tracer == null) {
-      log.warn("Tracer bean NOT found for TraceIdWebFilter. Tracing will be disabled.");
-      return null;
+  static class ReactiveTracingConfiguration {
+
+    @Bean
+    @ConditionalOnMissingBean(name = "traceIdWebFilter")
+    public TraceIdWebFilter traceIdWebFilter(Tracer tracer) {
+      return new TraceIdWebFilter(tracer);
     }
-    return new TraceIdWebFilter(tracer, observationRegistry);
   }
 }

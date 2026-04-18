@@ -1,4 +1,4 @@
-package com.common.web.dto;
+package com.app.common.web.dto;
 
 import java.util.List;
 import org.springframework.data.domain.Page;
