@@ -1,9 +1,9 @@
-package com.app.common.web.dto;
+package com.app.common.dto;
 
 import java.util.List;
 import org.springframework.data.domain.Page;
 
-/** Standard wrapper for paginated API responses. */
+/** Standardized wrapper for paginated collection responses. */
 public record PageResponse<T>(
     List<T> content,
     int pageNumber,
@@ -14,7 +14,6 @@ public record PageResponse<T>(
     boolean isLast,
     boolean hasNext,
     boolean hasPrevious) {
-
   public static <T> PageResponse<T> of(Page<T> page) {
     return new PageResponse<>(
         page.getContent(),

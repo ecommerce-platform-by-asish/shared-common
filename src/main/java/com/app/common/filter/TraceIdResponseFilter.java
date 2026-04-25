@@ -1,4 +1,4 @@
-package com.app.common.web.filter;
+package com.app.common.filter;
 
 import io.micrometer.tracing.Tracer;
 import jakarta.servlet.FilterChain;

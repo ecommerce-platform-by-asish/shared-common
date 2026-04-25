@@ -1,18 +1,20 @@
 package com.app.common.boot;
 
-import com.app.common.config.ActuatorAutoConfiguration;
-import com.app.common.config.OpenApiAutoConfiguration;
-import com.app.common.config.RedisCacheAutoConfiguration;
-import com.app.common.config.TracingAutoConfiguration;
-import java.util.ArrayList;
-import java.util.List;
+import com.app.common.configuration.ActuatorAutoConfiguration;
+import com.app.common.configuration.CachingConfiguration;
+import com.app.common.configuration.OpenApiAutoConfiguration;
+import com.app.common.configuration.RedisCacheAutoConfiguration;
+import com.app.common.configuration.TracingAutoConfiguration;
 import java.util.Map;
+import java.util.stream.Stream;
 import org.jspecify.annotations.NonNull;
 import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.type.AnnotationMetadata;
 
 /** Selects additional configurations based on annotation attributes. */
 class BaseBootImportSelector implements ImportSelector {
+
+  private record ImportEntry(String flag, Class<?> configClass) {}
 
   @Override
   public String @NonNull [] selectImports(AnnotationMetadata importingClassMetadata) {
@@ -23,23 +25,16 @@ class BaseBootImportSelector implements ImportSelector {
       return new String[0];
     }
 
-    List<String> imports = new ArrayList<>();
-
-    // Always register tracing & observation defaults
-    imports.add(TracingAutoConfiguration.class.getName());
-
-    if ((boolean) attributes.getOrDefault("enableOpenApi", false)) {
-      imports.add(OpenApiAutoConfiguration.class.getName());
-    }
-
-    if ((boolean) attributes.getOrDefault("enableActuator", false)) {
-      imports.add(ActuatorAutoConfiguration.class.getName());
-    }
-
-    if ((boolean) attributes.getOrDefault("enableCaching", false)) {
-      imports.add(RedisCacheAutoConfiguration.class.getName());
-    }
-
-    return imports.toArray(new String[0]);
+    return Stream.concat(
+            Stream.of(TracingAutoConfiguration.class),
+            Stream.of(
+                    new ImportEntry("enableOpenApi", OpenApiAutoConfiguration.class),
+                    new ImportEntry("enableActuator", ActuatorAutoConfiguration.class),
+                    new ImportEntry("enableCaching", CachingConfiguration.class),
+                    new ImportEntry("enableCaching", RedisCacheAutoConfiguration.class))
+                .filter(e -> (boolean) attributes.getOrDefault(e.flag(), false))
+                .map(ImportEntry::configClass))
+        .map(Class::getName)
+        .toArray(String[]::new);
   }
 }

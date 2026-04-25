@@ -1,105 +1,106 @@
 plugins {
     `java-library`
-    id("io.spring.dependency-management") version "1.1.7"
     `maven-publish`
-    id("com.diffplug.spotless") version "8.4.0"
+    
+    alias(libs.plugins.spotless)
 }
- 
+
 group = "com.app"
 version = "1.0.0-SNAPSHOT"
 description = "Core infrastructure library providing base Spring Boot application features, tracing, and observation."
 
 java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(25)
-    }
     withSourcesJar()
+    withJavadocJar()
 }
 
-repositories {
-    mavenCentral()
-    maven { url = uri("https://repo.spring.io/milestone") }
-}
-
-spotless {
-    java {
-        googleJavaFormat()
-    }
-}
-
-val springBootVersion = "4.0.5"
-val springDocVersion = "3.0.2"
-
-dependencyManagement {
-    imports {
-        mavenBom("org.springframework.boot:spring-boot-dependencies:$springBootVersion")
-    }
+tasks.withType<Javadoc> {
+    (options as StandardJavadocDocletOptions).addStringOption("Xdoclint:none", "-quiet")
 }
 
 dependencies {
-    // Platform Infrastructure — every service inherits these automatically
-    api("org.springframework.boot:spring-boot-starter")
-    api("org.springframework.boot:spring-boot-starter-validation")
-    api("org.springframework.boot:spring-boot-starter-actuator")
-
-    // Optional Selective Stacks — must be explicitly added by the service
-    compileOnly("org.springframework.boot:spring-boot-starter-web")
-    compileOnly("org.springframework.boot:spring-boot-starter-webflux")
-    compileOnly("org.springframework.boot:spring-boot-starter-data-jpa")
-    compileOnly("org.springframework.boot:spring-boot-jackson")
-    compileOnly("org.springdoc:springdoc-openapi-starter-webmvc-ui:${springDocVersion}")
-    compileOnly("org.springframework.boot:spring-boot-starter-data-redis")
-
-    // OTel tracing — transitive to all consumers via `api` scope
-    api("org.springframework.boot:spring-boot-starter-opentelemetry")
-    api("io.micrometer:micrometer-observation")
-    api("io.micrometer:micrometer-tracing")
-    api("io.micrometer:micrometer-tracing-bridge-otel")
-    api("io.micrometer:context-propagation")
     
-    // Additional OTel exporters pulled in for customization
-    api("io.opentelemetry:opentelemetry-exporter-logging")
-    api("io.opentelemetry:opentelemetry-exporter-otlp")
+    api(platform(libs.spring.boot.bom))
+    api(platform(libs.jackson.bom))
 
-    compileOnly("org.projectlombok:lombok")
-    annotationProcessor("org.projectlombok:lombok")
-    testCompileOnly("org.projectlombok:lombok")
-    testAnnotationProcessor("org.projectlombok:lombok")
-}
+    api(libs.spring.boot.starter)
+    api(libs.spring.boot.starter.validation)
+    api(libs.spring.boot.starter.actuator)
+    api(libs.spring.boot.autoconfigure)
 
-configurations.all {
-    // Jackson 3.x moved core/databind to tools.jackson — exclude old 2.x artifacts.
-    // jackson-annotations is still com.fasterxml and is needed by Jackson 3.x.
-    exclude(group = "com.fasterxml.jackson.core", module = "jackson-core")
-    exclude(group = "com.fasterxml.jackson.core", module = "jackson-databind")
-    exclude(group = "com.fasterxml.jackson.datatype")
-    exclude(group = "com.fasterxml.jackson.module")
+    api(libs.jackson.annotations)
+    implementation(libs.jackson.databind)
+
+    implementation(libs.spring.boot.starter.web)
+    api(libs.spring.boot.starter.webflux)
+    implementation(libs.spring.boot.starter.json)
+    
+    compileOnly(libs.spring.boot.starter.data.jpa)
+    compileOnly(libs.springdoc.openapi.webmvc)
+    compileOnly(libs.spring.boot.starter.data.redis)
+
+    api(libs.micrometer.observation)
+    api(libs.micrometer.tracing)
+    api(libs.micrometer.tracing.bridge.otel)
+
+    compileOnly(libs.lombok)
+    annotationProcessor(libs.lombok)
+    testCompileOnly(libs.lombok)
+    testAnnotationProcessor(libs.lombok)
+
+    annotationProcessor(platform(libs.spring.boot.bom))
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 }
 
 publishing {
     publications {
         create<MavenPublication>("maven") {
             from(components["java"])
-            versionMapping {
-                usage("java-api") {
-                    fromResolutionOf("runtimeClasspath")
-                }
-                usage("java-runtime") {
-                    fromResolutionOf("runtimeClasspath")
-                }
-            }
         }
     }
-}
-
-tasks.withType<JavaCompile> {
-    options.compilerArgs.addAll(listOf("-Xlint:all", "-Xlint:-serial", "-Xlint:-processing"))
 }
 
 tasks.named("build") {
     finalizedBy("publishToMavenLocal")
 }
 
-tasks.named("check") {
-    dependsOn("spotlessCheck")
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(25))
+    }
+}
+
+tasks.withType<JavaCompile>().configureEach {
+    options.isFork = true
+    options.forkOptions.jvmArgs = (options.forkOptions.jvmArgs ?: mutableListOf()).apply {
+        addAll(listOf(
+            "--add-opens", "jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED",
+            "--add-opens", "jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED",
+            "--add-opens", "jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED",
+            "--add-opens", "jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED",
+            "--add-opens", "jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED",
+            "--add-opens", "jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED",
+            "--add-opens", "jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED",
+            "--add-opens", "jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED",
+            "--add-opens", "jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED"
+        ))
+    }
+    options.compilerArgs.addAll(listOf(
+        "-Xlint:all", "-Xlint:-serial", "-Xlint:-processing", "-Xdoclint:none"
+    ))
+}
+
+spotless {
+    java {
+        googleJavaFormat("1.27.0")
+    }
+}
+
+configurations.all {
+    resolutionStrategy.eachDependency {
+        if (requested.group == "org.bouncycastle" && requested.name.startsWith("bcprov")) {
+            useVersion("1.84")
+            because("Force upgrade to resolve CVE-2026-0636")
+        }
+    }
 }

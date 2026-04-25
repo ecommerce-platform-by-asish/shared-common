@@ -1,13 +1,9 @@
 package com.app.common.exception;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 
 /** Standard error codes shared across all microservices. */
-@Getter
-@RequiredArgsConstructor
 public enum GlobalStatusCode implements StatusCode {
   SUCCESS(HttpStatus.OK, "Operation completed successfully"),
   VALIDATION_ERROR(HttpStatus.BAD_REQUEST, "One or more validation errors occurred"),
@@ -19,4 +15,24 @@ public enum GlobalStatusCode implements StatusCode {
 
   private final HttpStatusCode status;
   private final String message;
+
+  GlobalStatusCode(HttpStatusCode status, String message) {
+    this.status = status;
+    this.message = message;
+  }
+
+  @Override
+  public HttpStatusCode getStatus() {
+    return status;
+  }
+
+  @Override
+  public String getMessage() {
+    return message;
+  }
+
+  @Override
+  public HttpStatus getHttpStatus() {
+    return (HttpStatus) status;
+  }
 }

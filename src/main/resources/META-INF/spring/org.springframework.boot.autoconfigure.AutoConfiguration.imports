@@ -1,3 +1,2 @@
-com.app.common.config.TracingAutoConfiguration
-com.app.common.config.JacksonAutoConfiguration
-com.app.common.config.ExceptionAutoConfiguration
+com.app.common.configuration.TracingAutoConfiguration
+com.app.common.configuration.ExceptionAutoConfiguration

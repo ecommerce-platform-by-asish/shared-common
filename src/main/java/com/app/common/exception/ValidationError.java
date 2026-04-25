@@ -1,4 +1,6 @@
 package com.app.common.exception;
 
-/** Single field validation error detail. */
-public record ValidationError(String field, String message, Object rejectedValue) {}
+import java.io.Serializable;
+
+/** Model for individual field validation errors. */
+public record ValidationError(String field, String message) implements Serializable {}

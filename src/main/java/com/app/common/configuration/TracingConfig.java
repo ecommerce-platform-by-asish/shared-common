@@ -1,7 +1,9 @@
-package com.app.common.config;
+package com.app.common.configuration;
 
-import jakarta.annotation.PostConstruct;
 import org.jspecify.annotations.NullMarked;
+import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import reactor.core.publisher.Hooks;
 
@@ -19,8 +21,8 @@ public class TracingConfig {
    * Enables automatic context propagation for Project Reactor. This is essential for maintaining
    * traceId and userId in reactive environments like Spring Cloud Gateway.
    */
-  @PostConstruct
-  public void init() {
-    Hooks.enableAutomaticContextPropagation();
+  @Bean
+  public ApplicationListener<ApplicationStartedEvent> tracingBootstrap() {
+    return _ -> Hooks.enableAutomaticContextPropagation();
   }
 }

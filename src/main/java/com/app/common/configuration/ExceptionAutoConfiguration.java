@@ -1,7 +1,7 @@
-package com.app.common.config;
+package com.app.common.configuration;
 
-import com.app.common.exception.GlobalExceptionHandler;
-import com.app.common.exception.ReactiveGlobalExceptionHandler;
+import com.app.common.exception.handler.GlobalExceptionHandler;
+import com.app.common.exception.handler.ReactiveGlobalExceptionHandler;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Configuration;

@@ -10,6 +10,10 @@ import org.springframework.http.HttpStatusCode;
 public interface StatusCode extends Serializable {
   HttpStatusCode getStatus();
 
+  default org.springframework.http.HttpStatus getHttpStatus() {
+    return org.springframework.http.HttpStatus.valueOf(getStatus().value());
+  }
+
   String getMessage();
 
   default int getStatusCode() {

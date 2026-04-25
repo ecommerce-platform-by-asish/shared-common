@@ -1,4 +1,4 @@
-package com.app.common.config;
+package com.app.common.configuration;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;

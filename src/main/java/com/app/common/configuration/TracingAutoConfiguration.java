@@ -1,13 +1,11 @@
-package com.app.common.config;
+package com.app.common.configuration;
 
-import com.app.common.web.filter.TraceIdResponseFilter;
-import com.app.common.web.filter.TraceIdWebFilter;
-import io.micrometer.observation.Observation;
-import io.micrometer.observation.ObservationHandler;
+import com.app.common.filter.TraceIdResponseFilter;
+import com.app.common.filter.TraceIdWebFilter;
 import io.micrometer.tracing.Tracer;
-import io.micrometer.tracing.handler.DefaultTracingObservationHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -26,11 +24,6 @@ import org.springframework.core.Ordered;
         "org.springframework.boot.actuate.autoconfigure.tracing.MicrometerTracingAutoConfiguration")
 public class TracingAutoConfiguration {
 
-  @Bean
-  public ObservationHandler<Observation.Context> tracingObservationHandler(Tracer tracer) {
-    return new DefaultTracingObservationHandler(tracer);
-  }
-
   public TracingAutoConfiguration() {
     log.info("Initializing TracingAutoConfiguration...");
   }
@@ -39,6 +32,7 @@ public class TracingAutoConfiguration {
   @Configuration(proxyBeanMethods = false)
   @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
   @ConditionalOnClass(name = "org.springframework.boot.web.servlet.FilterRegistrationBean")
+  @ConditionalOnBean(Tracer.class)
   static class ServletTracingConfiguration {
 
     @Bean
@@ -54,6 +48,7 @@ public class TracingAutoConfiguration {
   @Configuration(proxyBeanMethods = false)
   @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
   @ConditionalOnClass(name = "org.springframework.web.server.WebFilter")
+  @ConditionalOnBean(Tracer.class)
   static class ReactiveTracingConfiguration {
 
     @Bean
