@@ -1,55 +1,36 @@
 plugins {
-    `java-library`
-    `maven-publish`
-    
+    id("java-library")
+    id("maven-publish")
+    alias(libs.plugins.springboot)
     alias(libs.plugins.spotless)
 }
 
 group = "com.app"
 version = "1.0.0-SNAPSHOT"
-description = "Core infrastructure library providing base Spring Boot application features, tracing, and observation."
 
 java {
+    toolchain { languageVersion.set(JavaLanguageVersion.of(25)) }
     withSourcesJar()
-    withJavadocJar()
-}
-
-tasks.withType<Javadoc> {
-    (options as StandardJavadocDocletOptions).addStringOption("Xdoclint:none", "-quiet")
 }
 
 dependencies {
-    
-    api(platform(libs.spring.boot.bom))
+    api(platform(libs.sb.bom))
+    api(platform(libs.sc.bom))
     api(platform(libs.jackson.bom))
-
-    api(libs.spring.boot.starter)
-    api(libs.spring.boot.starter.validation)
-    api(libs.spring.boot.starter.actuator)
-    api(libs.spring.boot.autoconfigure)
-
+    api(libs.sb.autoconfigure)
     api(libs.jackson.annotations)
     implementation(libs.jackson.databind)
-
-    implementation(libs.spring.boot.starter.web)
-    api(libs.spring.boot.starter.webflux)
-    implementation(libs.spring.boot.starter.json)
-    
-    compileOnly(libs.spring.boot.starter.data.jpa)
+    implementation(libs.sb.starter.json)
+    compileOnly(libs.sb.starter.web)
+    compileOnly(libs.sb.starter.webflux)
+    compileOnly(libs.sb.starter.data.jpa)
+    compileOnly(libs.sb.starter.data.redis)
     compileOnly(libs.springdoc.openapi.webmvc)
-    compileOnly(libs.spring.boot.starter.data.redis)
-
-    api(libs.micrometer.observation)
-    api(libs.micrometer.tracing)
-    api(libs.micrometer.tracing.bridge.otel)
-
+    api(libs.bundles.tracing)
+    api(libs.bouncycastle.bcprov)
     compileOnly(libs.lombok)
+    annotationProcessor(platform(libs.sb.bom))
     annotationProcessor(libs.lombok)
-    testCompileOnly(libs.lombok)
-    testAnnotationProcessor(libs.lombok)
-
-    annotationProcessor(platform(libs.spring.boot.bom))
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 }
 
 publishing {
@@ -60,47 +41,10 @@ publishing {
     }
 }
 
-tasks.named("build") {
-    finalizedBy("publishToMavenLocal")
-}
+spotless { java { googleJavaFormat("1.27.0") } }
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(25))
-    }
-}
 
-tasks.withType<JavaCompile>().configureEach {
-    options.isFork = true
-    options.forkOptions.jvmArgs = (options.forkOptions.jvmArgs ?: mutableListOf()).apply {
-        addAll(listOf(
-            "--add-opens", "jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED",
-            "--add-opens", "jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED",
-            "--add-opens", "jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED",
-            "--add-opens", "jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED",
-            "--add-opens", "jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED",
-            "--add-opens", "jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED",
-            "--add-opens", "jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED",
-            "--add-opens", "jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED",
-            "--add-opens", "jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED"
-        ))
-    }
-    options.compilerArgs.addAll(listOf(
-        "-Xlint:all", "-Xlint:-serial", "-Xlint:-processing", "-Xdoclint:none"
-    ))
-}
+tasks.bootJar { enabled = false }
+tasks.jar { enabled = true }
 
-spotless {
-    java {
-        googleJavaFormat("1.27.0")
-    }
-}
-
-configurations.all {
-    resolutionStrategy.eachDependency {
-        if (requested.group == "org.bouncycastle" && requested.name.startsWith("bcprov")) {
-            useVersion("1.84")
-            because("Force upgrade to resolve CVE-2026-0636")
-        }
-    }
-}
+tasks.build { dependsOn("publishToMavenLocal") }
