@@ -19,6 +19,8 @@ dependencies {
     api(platform(libs.jackson.bom))
     api(libs.sb.autoconfigure)
     api(libs.jackson.annotations)
+    api(libs.bundles.testbundle)
+    api(libs.bundles.testcontainers)
     implementation(libs.jackson.databind)
     implementation(libs.sb.starter.json)
     compileOnly(libs.sb.starter.web)

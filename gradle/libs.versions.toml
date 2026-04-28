@@ -11,6 +11,9 @@ postgresql = "42.7.5"
 jackson = "2.18.2"
 micrometer = "1.14.3"
 otel = "1.46.0"
+testcontainers = "2.0.5"
+wiremock = "3.12.0"
+junitJupiter = "1.21.4"
 
 [libraries]
 sb-bom = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "springBoot" }
@@ -33,6 +36,7 @@ sb-docker-compose = { module = "org.springframework.boot:spring-boot-docker-comp
 sb-devtools = { module = "org.springframework.boot:spring-boot-devtools", version.ref = "springBoot" }
 sb-starter-flyway = { module = "org.springframework.boot:spring-boot-starter-flyway", version.ref = "springBoot" }
 sb-starter-test = { module = "org.springframework.boot:spring-boot-starter-test", version.ref = "springBoot" }
+sb-testcontainers = { module = "org.springframework.boot:spring-boot-testcontainers", version.ref = "springBoot" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version = "" }
 
 sc-starter-gateway = { module = "org.springframework.cloud:spring-cloud-starter-gateway-server-webflux", version.ref = "springCloudGateway" }
@@ -57,6 +61,9 @@ jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jjwt" }
 
 micrometer-tracing-bridge-otel = { module = "io.micrometer:micrometer-tracing-bridge-otel", version = "" }
 otel-exporter-otlp = { module = "io.opentelemetry:opentelemetry-exporter-otlp", version = "" }
+testcontainers-core = { module = "org.testcontainers:testcontainers", version.ref = "testcontainers" }
+testcontainers-junit-jupiter = { module = "org.testcontainers:junit-jupiter", version.ref = "junitJupiter" }
+wiremock-standalone = { module = "org.wiremock:wiremock-standalone", version.ref = "wiremock" }
 
 [bundles]
 springweb = ["sb-starter-web", "sb-starter-validation"]
@@ -65,6 +72,7 @@ lombok = ["lombok"]
 lombokmapstruct = ["lombok", "mapstruct", "mapstruct-processor"]
 tracing = ["micrometer-tracing-bridge-otel", "otel-exporter-otlp"]
 testbundle = ["sb-starter-test", "junit-platform-launcher"]
+testcontainers = ["testcontainers-core", "testcontainers-junit-jupiter", "wiremock-standalone", "sb-testcontainers"]
 
 [plugins]
 springboot = { id = "org.springframework.boot", version.ref = "springBoot" }
