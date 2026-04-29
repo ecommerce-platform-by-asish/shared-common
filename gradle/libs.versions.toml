@@ -1,5 +1,5 @@
 [versions]
-springBoot = "4.0.6"
+springBoot = "4.1.0-RC1"
 springCloud = "2025.1.1"
 springCloudGateway = "5.0.1"
 springDoc = "3.0.3"
@@ -9,7 +9,7 @@ bouncycastle = "1.84"
 jjwt = "0.12.6"
 postgresql = "42.7.5"
 jackson = "2.18.2"
-micrometer = "1.14.3"
+micrometer = "1.16.5"
 otel = "1.46.0"
 testcontainers = "2.0.5"
 wiremock = "3.12.0"
@@ -38,6 +38,7 @@ sb-starter-flyway = { module = "org.springframework.boot:spring-boot-starter-fly
 sb-configuration-processor = { module = "org.springframework.boot:spring-boot-configuration-processor", version.ref = "springBoot" }
 sb-starter-test = { module = "org.springframework.boot:spring-boot-starter-test", version.ref = "springBoot" }
 sb-testcontainers = { module = "org.springframework.boot:spring-boot-testcontainers", version.ref = "springBoot" }
+sb-micrometer-tracing = { module = "org.springframework.boot:spring-boot-micrometer-tracing", version.ref = "springBoot" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version = "" }
 
 sc-starter-gateway = { module = "org.springframework.cloud:spring-cloud-starter-gateway-server-webflux", version.ref = "springCloudGateway" }
@@ -61,7 +62,9 @@ jjwt-api = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jjwt" }
 jjwt-impl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jjwt" }
 jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jjwt" }
 
-micrometer-tracing-bridge-otel = { module = "io.micrometer:micrometer-tracing-bridge-otel", version = "" }
+micrometer-tracing = { module = "io.micrometer:micrometer-tracing", version = "" }
+sb-starter-opentelemetry = { module = "org.springframework.boot:spring-boot-starter-opentelemetry", version.ref = "springBoot" }
+otel-sdk = { module = "io.opentelemetry:opentelemetry-sdk", version = "" }
 otel-exporter-otlp = { module = "io.opentelemetry:opentelemetry-exporter-otlp", version = "" }
 testcontainers-core = { module = "org.testcontainers:testcontainers", version.ref = "testcontainers" }
 testcontainers-junit-jupiter = { module = "org.testcontainers:junit-jupiter", version.ref = "junitJupiter" }
@@ -72,9 +75,13 @@ springweb = ["sb-starter-web", "sb-starter-validation"]
 databasejpa = ["sb-starter-data-jpa", "postgresql", "sb-starter-flyway", "flyway-database-postgresql"]
 lombok = ["lombok"]
 lombokmapstruct = ["lombok", "mapstruct", "mapstruct-processor"]
-tracing = ["micrometer-tracing-bridge-otel", "otel-exporter-otlp"]
+tracing = ["sb-starter-opentelemetry"]
 testbundle = ["sb-starter-test", "junit-platform-launcher"]
 testcontainers = ["testcontainers-core", "testcontainers-junit-jupiter", "wiremock-standalone", "sb-testcontainers"]
+security-jwt = ["jjwt-api", "jjwt-impl", "jjwt-jackson"]
+observability = ["sb-starter-actuator", "sb-starter-opentelemetry"]
+reactive-gateway = ["sc-starter-gateway", "sb-starter-webflux", "sb-starter-data-redis-reactive"]
+persistence-pg = ["sb-starter-data-jpa", "postgresql", "sb-starter-flyway", "flyway-database-postgresql"]
 
 [plugins]
 springboot = { id = "org.springframework.boot", version.ref = "springBoot" }

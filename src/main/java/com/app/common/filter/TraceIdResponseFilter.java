@@ -22,10 +22,13 @@ public class TraceIdResponseFilter extends OncePerRequestFilter {
       @NonNull HttpServletResponse response,
       @NonNull FilterChain filterChain)
       throws ServletException, IOException {
-    var currentSpan = tracer.currentSpan();
-    if (currentSpan != null) {
-      response.setHeader("X-Trace-Id", currentSpan.context().traceId());
+    if (tracer != null) {
+      var currentSpan = tracer.currentSpan();
+      if (currentSpan != null) {
+        response.setHeader("X-Trace-Id", currentSpan.context().traceId());
+      }
     }
+
     filterChain.doFilter(request, response);
   }
 }

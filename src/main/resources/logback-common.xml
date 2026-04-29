@@ -10,14 +10,10 @@
   <conversionRule conversionWord="clr"
     class="org.springframework.boot.logging.logback.ColorConverter"/>
 
-  <conversionRule conversionWord="mdcClr"
-    class="com.app.common.logging.MdcColorConverter"/>
-
-
   <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <withJansi>true</withJansi>
     <encoder>
-      <!-- Beautiful, color-coded, and well-spaced log format -->
-      <pattern>%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%-5level) %clr(---){faint} %clr([%15.15thread]){faint} %clr([){faint}%clr(trace=){faint}%mdcClr{traceId} %clr(user=){faint}%mdcClr{userId}%clr(]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %msg%n</pattern>
+      <pattern>%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%-5level) %clr(---){faint} %clr([%15.15thread]){faint} [%clr(traceId=%X{traceId:-none}){blue}, %clr(spanId=%X{spanId:-none}){blue}, %clr(userId=%X{userId:-none}){yellow}] %clr(%-40.40logger{39}){cyan} %clr(:){faint} %msg%n</pattern>
       <charset>UTF-8</charset>
     </encoder>
   </appender>

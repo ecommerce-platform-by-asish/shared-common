@@ -3,7 +3,7 @@ package com.app.common.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 
-/** Standard error codes shared across all microservices. */
+/** Standard set of application-wide status codes for API responses. */
 public enum GlobalStatusCode implements StatusCode {
   SUCCESS(HttpStatus.OK, "Operation completed successfully"),
   VALIDATION_ERROR(HttpStatus.BAD_REQUEST, "One or more validation errors occurred"),

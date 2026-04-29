@@ -4,10 +4,7 @@ import java.io.Serializable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 
-/**
- * Standard interface for all system machine-readable codes. This can be implemented by enums in
- * different services to provide extensible business codes and their default HTTP status.
- */
+/** Interface for all machine-readable business status codes and their associated HTTP status. */
 public interface StatusCode extends Serializable {
   HttpStatusCode getStatus();
 

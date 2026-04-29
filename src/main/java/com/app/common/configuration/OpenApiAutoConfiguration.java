@@ -9,12 +9,14 @@ import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-/** Unified OpenAPI/Swagger configuration for API documentation. */
+/** Central OpenAPI configuration for standardized Swagger UI documentation. */
 @Configuration
 @ConditionalOnClass(name = "org.springdoc.core.models.GroupedOpenApi")
+@ConditionalOnProperty(name = "app.openapi.enabled", havingValue = "true")
 public class OpenApiAutoConfiguration {
 
   @Value("${app.openapi.title:Common Service API}")
@@ -28,6 +30,7 @@ public class OpenApiAutoConfiguration {
 
   private static final String SECURITY_SCHEME_NAME = "BearerAuth";
 
+  /** Defines the global OpenAPI specification including security schemes and metadata. */
   @Bean
   public OpenAPI customOpenApi() {
     return new OpenAPI()

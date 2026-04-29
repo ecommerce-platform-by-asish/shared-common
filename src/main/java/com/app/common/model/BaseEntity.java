@@ -23,7 +23,7 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-/** Base auditing entity for all persistent domain models. */
+/** Base JPA model providing UUID identity and automated auditing timestamps. */
 @Getter
 @Setter
 @MappedSuperclass

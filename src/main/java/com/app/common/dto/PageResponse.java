@@ -3,7 +3,7 @@ package com.app.common.dto;
 import java.util.List;
 import org.springframework.data.domain.Page;
 
-/** Standardized wrapper for paginated collection responses. */
+/** Unified wrapper for paginated collections ensuring consistent metadata across all services. */
 public record PageResponse<T>(
     List<T> content,
     int pageNumber,
@@ -14,6 +14,7 @@ public record PageResponse<T>(
     boolean isLast,
     boolean hasNext,
     boolean hasPrevious) {
+  /** Transforms a Spring Data Page into a standardized PageResponse. */
   public static <T> PageResponse<T> of(Page<T> page) {
     return new PageResponse<>(
         page.getContent(),

@@ -5,12 +5,10 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import org.springframework.boot.ansi.AnsiColor;
 import org.springframework.boot.ansi.AnsiOutput;
 
-/**
- * Custom Logback converter to color MDC values based on their content. Red if 'none' or
- * 'anonymous', Green otherwise.
- */
+/** Custom Logback converter that applies ANSI colors to MDC values for improved log readability. */
 public class MdcColorConverter extends ClassicConverter {
 
+  /** Colors values Green when present, and Red when anonymous or missing. */
   @Override
   public String convert(ILoggingEvent event) {
     // Force ANSI to be always enabled for this converter

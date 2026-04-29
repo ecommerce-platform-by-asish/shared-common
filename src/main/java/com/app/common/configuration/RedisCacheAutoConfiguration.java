@@ -15,11 +15,12 @@ import org.springframework.data.redis.serializer.RedisSerializer;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
 
-/** Standard Redis caching configuration. */
+/** Standard Redis caching configuration for shared microservice use. */
 @Configuration
 @ConditionalOnClass(RedisCacheConfiguration.class)
 public class RedisCacheAutoConfiguration {
 
+  /** Configures default Redis serialization using JSON for values and strings for keys. */
   @Bean
   @ConditionalOnMissingBean
   public RedisCacheConfiguration redisCacheConfiguration() {
@@ -34,6 +35,7 @@ public class RedisCacheAutoConfiguration {
             RedisSerializationContext.SerializationPair.fromSerializer(serializer));
   }
 
+  /** Provides a Redis-backed CacheManager as the primary caching provider. */
   @Bean
   @Primary
   @ConditionalOnClass(RedisConnectionFactory.class)

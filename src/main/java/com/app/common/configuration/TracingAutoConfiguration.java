@@ -4,42 +4,55 @@ import com.app.common.filter.TraceIdResponseFilter;
 import com.app.common.filter.TraceIdWebFilter;
 import io.micrometer.tracing.Tracer;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.Ordered;
 import org.springframework.web.server.WebFilter;
+import reactor.core.publisher.Hooks;
 
-/** Common tracing and observation configuration. */
+/**
+ * Main Tracing Auto-Configuration. Leverages native Spring Boot 4.1.0-RC1 tracing while providing
+ * essential Reactor context propagation and custom trace filters.
+ */
 @Slf4j
-@Configuration
+@AutoConfiguration
 @PropertySource("classpath:common-tracing.properties")
-@AutoConfigureAfter(
-    name =
-        "org.springframework.boot.actuate.autoconfigure.tracing.MicrometerTracingAutoConfiguration")
 public class TracingAutoConfiguration {
 
+  @Value("${spring.application.name:unknown-service}")
+  private String serviceName;
+
   public TracingAutoConfiguration() {
-    log.info("Initializing TracingAutoConfiguration...");
+    log.info("Initializing TracingAutoConfiguration for service: {}", serviceName);
+  }
+
+  @Bean
+  public ApplicationListener<ApplicationStartedEvent> tracingBootstrap() {
+    return _ -> {
+      log.info("Enabling Reactor automatic context propagation for Spring Boot 4.1.0-RC1");
+      Hooks.enableAutomaticContextPropagation();
+    };
   }
 
   /** Tracing configuration for Servlet-based applications. */
   @Configuration(proxyBeanMethods = false)
   @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
   @ConditionalOnClass(FilterRegistrationBean.class)
-  @ConditionalOnBean(Tracer.class)
   static class ServletTracingConfiguration {
-
     @Bean
-    @ConditionalOnMissingBean(name = "traceIdResponseFilter")
-    public FilterRegistrationBean<TraceIdResponseFilter> traceIdResponseFilter(Tracer tracer) {
-      var registrationBean = new FilterRegistrationBean<>(new TraceIdResponseFilter(tracer));
+    public FilterRegistrationBean<TraceIdResponseFilter> traceIdResponseFilter(
+        ObjectProvider<Tracer> tracerProvider) {
+      var registrationBean =
+          new FilterRegistrationBean<>(new TraceIdResponseFilter(tracerProvider.getIfAvailable()));
       registrationBean.setOrder(Ordered.LOWEST_PRECEDENCE);
       return registrationBean;
     }
@@ -49,13 +62,10 @@ public class TracingAutoConfiguration {
   @Configuration(proxyBeanMethods = false)
   @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
   @ConditionalOnClass(WebFilter.class)
-  @ConditionalOnBean(Tracer.class)
   static class ReactiveTracingConfiguration {
-
     @Bean
-    @ConditionalOnMissingBean(name = "traceIdWebFilter")
-    public TraceIdWebFilter traceIdWebFilter(Tracer tracer) {
-      return new TraceIdWebFilter(tracer);
+    public TraceIdWebFilter traceIdWebFilter(ObjectProvider<Tracer> tracerProvider) {
+      return new TraceIdWebFilter(tracerProvider.getIfAvailable());
     }
   }
 }

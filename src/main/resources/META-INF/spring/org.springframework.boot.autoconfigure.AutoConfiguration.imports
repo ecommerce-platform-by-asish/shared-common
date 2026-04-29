@@ -1,2 +1,5 @@
 com.app.common.configuration.TracingAutoConfiguration
 com.app.common.configuration.ExceptionAutoConfiguration
+com.app.common.configuration.OpenApiAutoConfiguration
+com.app.common.configuration.ActuatorAutoConfiguration
+com.app.common.configuration.CachingConfiguration

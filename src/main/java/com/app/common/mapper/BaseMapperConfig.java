@@ -4,10 +4,7 @@ import org.mapstruct.MapperConfig;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
-/**
- * Shared MapStruct configuration to standardize mapping behavior across all microservices.
- * Automatically ignores common auditing fields defined in BaseEntity.
- */
+/** Central MapStruct configuration ensuring consistent DTO-to-Entity mapping defaults. */
 @MapperConfig(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface BaseMapperConfig {
 
@@ -18,5 +15,6 @@ public interface BaseMapperConfig {
   @Mapping(target = "createdBy", ignore = true)
   @Mapping(target = "updatedBy", ignore = true)
   @Mapping(target = "version", ignore = true)
+  /** Base mapping signature that ignores all shared auditing and identity fields. */
   Object anyToEntity(Object dto);
 }

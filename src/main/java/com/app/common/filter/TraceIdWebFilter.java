@@ -19,10 +19,18 @@ public class TraceIdWebFilter implements WebFilter {
 
   @Override
   public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
-    var currentSpan = tracer.currentSpan();
-    if (currentSpan != null) {
-      exchange.getResponse().getHeaders().add("X-Trace-Id", currentSpan.context().traceId());
-    }
-    return chain.filter(exchange);
+    return Mono.defer(
+        () -> {
+          if (tracer != null) {
+            var currentSpan = tracer.currentSpan();
+            if (currentSpan != null) {
+              exchange
+                  .getResponse()
+                  .getHeaders()
+                  .set("X-Trace-Id", currentSpan.context().traceId());
+            }
+          }
+          return chain.filter(exchange);
+        });
   }
 }
