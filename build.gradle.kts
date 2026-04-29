@@ -26,6 +26,7 @@ dependencies {
     compileOnly(libs.sb.starter.web)
     compileOnly(libs.sb.starter.webflux)
     compileOnly(libs.sb.starter.data.jpa)
+    compileOnly(libs.spring.data.commons)
     compileOnly(libs.sb.starter.data.redis)
     compileOnly(libs.springdoc.openapi.webmvc)
     api(libs.bundles.tracing)

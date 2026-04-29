@@ -1,6 +1,7 @@
 package com.app.common.exception;
 
 import java.io.Serializable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 
 /**
@@ -10,8 +11,8 @@ import org.springframework.http.HttpStatusCode;
 public interface StatusCode extends Serializable {
   HttpStatusCode getStatus();
 
-  default org.springframework.http.HttpStatus getHttpStatus() {
-    return org.springframework.http.HttpStatus.valueOf(getStatus().value());
+  default HttpStatus getHttpStatus() {
+    return HttpStatus.valueOf(getStatus().value());
   }
 
   String getMessage();

@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.Ordered;
+import org.springframework.web.server.WebFilter;
 
 /** Common tracing and observation configuration. */
 @Slf4j
@@ -31,7 +32,7 @@ public class TracingAutoConfiguration {
   /** Tracing configuration for Servlet-based applications. */
   @Configuration(proxyBeanMethods = false)
   @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-  @ConditionalOnClass(name = "org.springframework.boot.web.servlet.FilterRegistrationBean")
+  @ConditionalOnClass(FilterRegistrationBean.class)
   @ConditionalOnBean(Tracer.class)
   static class ServletTracingConfiguration {
 
@@ -47,7 +48,7 @@ public class TracingAutoConfiguration {
   /** Tracing configuration for Reactive (WebFlux) applications. */
   @Configuration(proxyBeanMethods = false)
   @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
-  @ConditionalOnClass(name = "org.springframework.web.server.WebFilter")
+  @ConditionalOnClass(WebFilter.class)
   @ConditionalOnBean(Tracer.class)
   static class ReactiveTracingConfiguration {
 

@@ -6,6 +6,8 @@ import com.app.common.exception.ValidationError;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.Instant;
 import java.util.List;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 /** Standardized API response wrapper for all microservice endpoints. */
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -45,5 +47,13 @@ public record ApiResponse<T>(
   public static <T> ApiResponse<T> error(
       String message, String code, List<ValidationError> errors) {
     return new ApiResponse<>(false, code, null, message, errors, null);
+  }
+
+  public ResponseEntity<ApiResponse<T>> toEntity() {
+    return toEntity(HttpStatus.OK);
+  }
+
+  public ResponseEntity<ApiResponse<T>> toEntity(HttpStatus status) {
+    return ResponseEntity.status(status).body(this);
   }
 }

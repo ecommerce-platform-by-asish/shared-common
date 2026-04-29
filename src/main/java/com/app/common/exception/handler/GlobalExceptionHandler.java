@@ -8,6 +8,8 @@ import com.app.common.exception.ValidationError;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.core.PropertyReferenceException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -41,6 +43,26 @@ public class GlobalExceptionHandler {
             GlobalStatusCode.VALIDATION_ERROR.toString(),
             errors);
 
+    return ResponseEntity.badRequest().body(response);
+  }
+
+  @ExceptionHandler(DataAccessException.class)
+  public ResponseEntity<ApiResponse<Void>> handleDataAccessException(DataAccessException ex) {
+    log.warn("Data access error: {}", ex.getMessage());
+    ApiResponse<Void> response =
+        ApiResponse.error(
+            GlobalStatusCode.BAD_REQUEST,
+            "Invalid request parameters: " + ex.getMostSpecificCause().getMessage());
+    return ResponseEntity.badRequest().body(response);
+  }
+
+  @ExceptionHandler(PropertyReferenceException.class)
+  public ResponseEntity<ApiResponse<Void>> handlePropertyReferenceException(
+      PropertyReferenceException ex) {
+    log.warn("Invalid property reference (likely invalid sort field): {}", ex.getMessage());
+    ApiResponse<Void> response =
+        ApiResponse.error(
+            GlobalStatusCode.BAD_REQUEST, "Invalid request parameters: " + ex.getMessage());
     return ResponseEntity.badRequest().body(response);
   }
 
