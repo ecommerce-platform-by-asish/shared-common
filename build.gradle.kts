@@ -21,8 +21,8 @@ dependencies {
     api(libs.jackson.annotations)
     api(libs.bundles.testbundle)
     api(libs.bundles.testcontainers)
-    implementation(libs.jackson.databind)
-    implementation(libs.sb.starter.json)
+    api(libs.jackson.databind)
+    api(libs.sb.starter.json)
     compileOnly(libs.sb.starter.web)
     compileOnly(libs.sb.starter.webflux)
     compileOnly(libs.sb.starter.data.jpa)
@@ -47,10 +47,27 @@ publishing {
     }
 }
 
-spotless { java { googleJavaFormat("1.27.0") } }
+tasks.withType<JavaCompile>().configureEach {
+    options.encoding = "UTF-8"
+    options.compilerArgs.removeAll { it == "--enable-preview" }
+}
+
+spotless {
+    java {
+        googleJavaFormat("1.27.0")
+        removeUnusedImports()
+    }
+}
 
 
 tasks.bootJar { enabled = false }
 tasks.jar { enabled = true }
 
-tasks.build { dependsOn("publishToMavenLocal") }
+tasks.build {
+    finalizedBy("publishToMavenLocal")
+}
+
+
+tasks.clean {
+    mustRunAfter("spotlessApply")
+}

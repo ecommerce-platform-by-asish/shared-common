@@ -6,12 +6,10 @@ import com.app.common.exception.GlobalStatusCode;
 import com.app.common.exception.StatusCode;
 import com.app.common.exception.ValidationError;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.core.PropertyReferenceException;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -34,8 +32,8 @@ public class GlobalExceptionHandler {
       MethodArgumentNotValidException ex) {
     List<ValidationError> errors =
         ex.getBindingResult().getFieldErrors().stream()
-            .map(this::mapToValidationError)
-            .collect(Collectors.toList());
+            .map(e -> new ValidationError(e.getField(), e.getDefaultMessage()))
+            .toList();
 
     ApiResponse<Void> response =
         ApiResponse.error(
@@ -71,9 +69,5 @@ public class GlobalExceptionHandler {
     log.error("Unhandled exception occurred", ex);
     ApiResponse<Void> response = ApiResponse.error(GlobalStatusCode.INTERNAL_SERVER_ERROR);
     return new ResponseEntity<>(response, GlobalStatusCode.INTERNAL_SERVER_ERROR.getHttpStatus());
-  }
-
-  private ValidationError mapToValidationError(FieldError error) {
-    return new ValidationError(error.getField(), error.getDefaultMessage());
   }
 }
