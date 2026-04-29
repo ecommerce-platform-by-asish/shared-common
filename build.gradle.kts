@@ -31,10 +31,13 @@ dependencies {
     compileOnly(libs.springdoc.openapi.webmvc)
     api(libs.bundles.tracing)
     api(libs.bouncycastle.bcprov)
+    api(libs.mapstruct)
     compileOnly(libs.lombok)
     annotationProcessor(platform(libs.sb.bom))
     annotationProcessor(libs.lombok)
+    annotationProcessor(libs.mapstruct.processor)
 }
+
 
 publishing {
     publications {
