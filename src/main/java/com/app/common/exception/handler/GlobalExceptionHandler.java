@@ -10,6 +10,9 @@ import io.micrometer.observation.ObservationRegistry;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.webflux.error.ErrorWebExceptionHandler;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataAccessException;
@@ -21,6 +24,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 import tools.jackson.databind.ObjectMapper;
@@ -33,9 +37,7 @@ public final class GlobalExceptionHandler {
   /** Intercepts system exceptions to return standardized API responses in Servlet apps. */
   @Slf4j
   @RestControllerAdvice
-  @org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication(
-      type =
-          org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type.SERVLET)
+  @ConditionalOnWebApplication(type = Type.SERVLET)
   public static class Servlet {
 
     /** Handles domain-specific business exceptions. */
@@ -66,14 +68,19 @@ public final class GlobalExceptionHandler {
     }
 
     /** Handles database access and connectivity issues. */
-    @ExceptionHandler(DataAccessException.class)
-    public ResponseEntity<ApiResponse<Void>> handleDataAccessException(DataAccessException ex) {
-      log.warn("Data access error: {}", ex.getMessage());
-      ApiResponse<Void> response =
-          ApiResponse.error(
-              GlobalStatusCode.BAD_REQUEST,
-              "Invalid request parameters: " + ex.getMostSpecificCause().getMessage());
-      return ResponseEntity.badRequest().body(response);
+    @RestControllerAdvice
+    @ConditionalOnClass(DataAccessException.class)
+    @ConditionalOnWebApplication(type = Type.SERVLET)
+    public static class Database {
+      @ExceptionHandler(DataAccessException.class)
+      public ResponseEntity<ApiResponse<Void>> handleDataAccessException(DataAccessException ex) {
+        log.warn("Data access error: {}", ex.getMessage());
+        ApiResponse<Void> response =
+            ApiResponse.error(
+                GlobalStatusCode.BAD_REQUEST,
+                "Invalid request parameters: " + ex.getMostSpecificCause().getMessage());
+        return ResponseEntity.badRequest().body(response);
+      }
     }
 
     /** Fallback handler for all uncaught system exceptions. */
@@ -93,10 +100,7 @@ public final class GlobalExceptionHandler {
   @Component
   @Order(-2)
   @RequiredArgsConstructor
-  @org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication(
-      type =
-          org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type
-              .REACTIVE)
+  @ConditionalOnWebApplication(type = Type.REACTIVE)
   public static class Reactive implements ErrorWebExceptionHandler {
 
     private final ObjectMapper objectMapper;
@@ -113,7 +117,7 @@ public final class GlobalExceptionHandler {
               p.setTitle(be.getErrorCode().toString());
               yield p;
             }
-            case org.springframework.web.server.ResponseStatusException rse ->
+            case ResponseStatusException rse ->
                 ProblemDetail.forStatusAndDetail(rse.getStatusCode(), rse.getReason());
             default ->
                 ProblemDetail.forStatusAndDetail(

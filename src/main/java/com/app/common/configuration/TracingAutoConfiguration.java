@@ -35,12 +35,20 @@ public class TracingAutoConfiguration {
     log.info("Initializing TracingAutoConfiguration for service: {}", serviceName);
   }
 
-  @Bean
-  public ApplicationListener<ApplicationStartedEvent> tracingBootstrap() {
-    return _ -> {
-      log.info("Enabling Reactor automatic context propagation for Spring Boot 4.1.0-RC1");
-      Hooks.enableAutomaticContextPropagation();
-    };
+  /**
+   * Enables automatic context propagation for Reactor if it is on the classpath. This is essential
+   * for Micrometer Tracing to work correctly in reactive flows.
+   */
+  @Configuration(proxyBeanMethods = false)
+  @ConditionalOnClass(Hooks.class)
+  static class ReactorTracingConfiguration {
+    @Bean
+    public ApplicationListener<ApplicationStartedEvent> tracingBootstrap() {
+      return _ -> {
+        log.info("Enabling Reactor automatic context propagation");
+        Hooks.enableAutomaticContextPropagation();
+      };
+    }
   }
 
   /** Tracing configuration for Servlet-based applications. */
