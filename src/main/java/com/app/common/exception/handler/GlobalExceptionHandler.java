@@ -1,15 +1,17 @@
 package com.app.common.exception.handler;
 
-import com.app.common.dto.ApiResponse;
 import com.app.common.exception.BaseException;
 import com.app.common.exception.GlobalStatusCode;
 import com.app.common.exception.StatusCode;
 import com.app.common.exception.ValidationError;
+import com.app.common.model.CommonConstants;
 import io.micrometer.observation.Observation;
 import io.micrometer.observation.ObservationRegistry;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
@@ -19,7 +21,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -42,53 +43,58 @@ public final class GlobalExceptionHandler {
 
     /** Handles domain-specific business exceptions. */
     @ExceptionHandler(BaseException.class)
-    public ResponseEntity<ApiResponse<Void>> handleBaseException(BaseException ex) {
+    public ProblemDetail handleBaseException(BaseException ex) {
       log.error("Business exception: {}", ex.getMessage());
       StatusCode statusCode = ex.getErrorCode();
-      ApiResponse<Void> response = ApiResponse.error(statusCode);
-      return new ResponseEntity<>(response, statusCode.getHttpStatus());
+      ProblemDetail problem =
+          ProblemDetail.forStatusAndDetail(statusCode.getHttpStatus(), ex.getMessage());
+      problem.setTitle(statusCode.toString());
+      return problem;
     }
 
     /** Maps bean validation failures to detailed error reports. */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<Void>> handleValidationException(
-        MethodArgumentNotValidException ex) {
+    public ProblemDetail handleValidationException(MethodArgumentNotValidException ex) {
       List<ValidationError> errors =
           ex.getBindingResult().getFieldErrors().stream()
               .map(e -> new ValidationError(e.getField(), e.getDefaultMessage()))
               .toList();
 
-      ApiResponse<Void> response =
-          ApiResponse.error(
-              GlobalStatusCode.VALIDATION_ERROR.getMessage(),
-              GlobalStatusCode.VALIDATION_ERROR.toString(),
-              errors);
-
-      return ResponseEntity.badRequest().body(response);
+      ProblemDetail problem =
+          ProblemDetail.forStatusAndDetail(
+              GlobalStatusCode.VALIDATION_ERROR.getHttpStatus(),
+              GlobalStatusCode.VALIDATION_ERROR.getMessage());
+      problem.setTitle(GlobalStatusCode.VALIDATION_ERROR.toString());
+      problem.setProperty("errors", errors);
+      return problem;
     }
 
     /** Handles database access and connectivity issues. */
+    @Slf4j
     @RestControllerAdvice
     @ConditionalOnClass(DataAccessException.class)
     @ConditionalOnWebApplication(type = Type.SERVLET)
     public static class Database {
+
       @ExceptionHandler(DataAccessException.class)
-      public ResponseEntity<ApiResponse<Void>> handleDataAccessException(DataAccessException ex) {
+      public ProblemDetail handleDataAccessException(DataAccessException ex) {
         log.warn("Data access error: {}", ex.getMessage());
-        ApiResponse<Void> response =
-            ApiResponse.error(
-                GlobalStatusCode.BAD_REQUEST,
-                "Invalid request parameters: " + ex.getMostSpecificCause().getMessage());
-        return ResponseEntity.badRequest().body(response);
+        return ProblemDetail.forStatusAndDetail(
+            HttpStatus.BAD_REQUEST,
+            "Invalid request parameters: " + ex.getMostSpecificCause().getMessage());
       }
     }
 
     /** Fallback handler for all uncaught system exceptions. */
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Void>> handleGenericException(Exception ex) {
+    public ProblemDetail handleGenericException(Exception ex) {
       log.error("Unhandled exception occurred", ex);
-      ApiResponse<Void> response = ApiResponse.error(GlobalStatusCode.INTERNAL_SERVER_ERROR);
-      return new ResponseEntity<>(response, GlobalStatusCode.INTERNAL_SERVER_ERROR.getHttpStatus());
+      ProblemDetail problem =
+          ProblemDetail.forStatusAndDetail(
+              GlobalStatusCode.INTERNAL_SERVER_ERROR.getHttpStatus(),
+              GlobalStatusCode.INTERNAL_SERVER_ERROR.getMessage());
+      problem.setTitle(GlobalStatusCode.INTERNAL_SERVER_ERROR.toString());
+      return problem;
     }
   }
 
@@ -107,11 +113,11 @@ public final class GlobalExceptionHandler {
     private final ObservationRegistry observationRegistry;
 
     @Override
-    public Mono<Void> handle(ServerWebExchange exchange, Throwable ex) {
+    public @NonNull Mono<Void> handle(@NonNull ServerWebExchange exchange, Throwable ex) {
       ProblemDetail problem =
           switch (ex) {
             case BaseException be -> {
-              ProblemDetail p =
+              var p =
                   ProblemDetail.forStatusAndDetail(
                       be.getErrorCode().getHttpStatus(), be.getMessage());
               p.setTitle(be.getErrorCode().toString());
@@ -124,20 +130,18 @@ public final class GlobalExceptionHandler {
                     HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred");
           };
 
-      // Modern Micrometer pattern: wrap logging in observation scope
       Observation observation =
           exchange.getAttribute(
               "org.springframework.cloud.gateway.support.ServerWebExchangeUtils.gatewayObservation");
-      if (observation == null) {
-        observation = observationRegistry.getCurrentObservation();
-      }
+      if (observation == null) observation = observationRegistry.getCurrentObservation();
 
-      if (observation != null) {
-        observation.observe(
-            () -> log.error("Reactive error [{}]: {}", problem.getStatus(), ex.getMessage()));
-      } else {
-        log.error("Reactive error [{}]: {}", problem.getStatus(), ex.getMessage());
-      }
+      String userId =
+          exchange.getAttributeOrDefault(CommonConstants.USER_ID_KEY, CommonConstants.NONE);
+      Runnable logger =
+          () -> log.error("Reactive error [{}]: {}", problem.getStatus(), ex.getMessage(), ex);
+      Optional.ofNullable(observation)
+          .map(obs -> obs.error(ex))
+          .ifPresentOrElse(obs -> obs.observe(logger), logger);
 
       exchange.getResponse().setStatusCode(HttpStatus.valueOf(problem.getStatus()));
       exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_PROBLEM_JSON);

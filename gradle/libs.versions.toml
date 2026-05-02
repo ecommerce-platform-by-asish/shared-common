@@ -8,7 +8,8 @@ mapstruct = "1.6.3"
 bouncycastle = "1.84"
 jjwt = "0.12.6"
 postgresql = "42.7.5"
-jackson = "2.18.2"
+jackson3 = "3.1.2"
+jackson2 = "2.18.2"
 micrometer = "1.16.5"
 otel = "1.46.0"
 testcontainers = "2.0.5"
@@ -18,7 +19,7 @@ junitJupiter = "1.21.4"
 [libraries]
 sb-bom = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "springBoot" }
 sc-bom = { module = "org.springframework.cloud:spring-cloud-dependencies", version.ref = "springCloud" }
-jackson-bom = { module = "com.fasterxml.jackson:jackson-bom", version.ref = "jackson" }
+jackson-bom = { module = "tools.jackson:jackson-bom", version.ref = "jackson3" }
 jjwt-bom = { module = "io.jsonwebtoken:jjwt-root", version.ref = "jjwt" }
 
 sb-autoconfigure = { module = "org.springframework.boot:spring-boot-autoconfigure", version.ref = "springBoot" }
@@ -54,8 +55,8 @@ springdoc-openapi-webflux-ui = { module = "org.springdoc:springdoc-openapi-start
 lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
 mapstruct = { module = "org.mapstruct:mapstruct", version.ref = "mapstruct" }
 mapstruct-processor = { module = "org.mapstruct:mapstruct-processor", version.ref = "mapstruct" }
-jackson-annotations = { module = "com.fasterxml.jackson.core:jackson-annotations", version.ref = "jackson" }
-jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
+jackson-annotations = { module = "com.fasterxml.jackson.core:jackson-annotations", version.ref = "jackson2" }
+jackson-databind = { module = "tools.jackson.core:jackson-databind", version.ref = "jackson3" }
 
 bouncycastle-bcprov = { module = "org.bouncycastle:bcprov-jdk18on", version.ref = "bouncycastle" }
 jjwt-api = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jjwt" }

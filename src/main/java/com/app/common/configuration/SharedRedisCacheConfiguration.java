@@ -16,9 +16,9 @@ import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
 
 /** Standard Redis caching configuration for shared microservice use. */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(RedisCacheConfiguration.class)
-public class RedisCacheAutoConfiguration {
+public class SharedRedisCacheConfiguration {
 
   /** Configures default Redis serialization using JSON for values and strings for keys. */
   @Bean

@@ -3,6 +3,7 @@ package com.app.common.configuration;
 import com.app.common.filter.TraceIdResponseFilter;
 import com.app.common.filter.TraceIdWebFilter;
 import io.micrometer.tracing.Tracer;
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,7 +32,10 @@ public class TracingAutoConfiguration {
   @Value("${spring.application.name:unknown-service}")
   private String serviceName;
 
-  public TracingAutoConfiguration() {
+  public TracingAutoConfiguration() {}
+
+  @jakarta.annotation.PostConstruct
+  public void init() {
     log.info("Initializing TracingAutoConfiguration for service: {}", serviceName);
   }
 
@@ -39,9 +43,11 @@ public class TracingAutoConfiguration {
    * Enables automatic context propagation for Reactor if it is on the classpath. This is essential
    * for Micrometer Tracing to work correctly in reactive flows.
    */
+  @Slf4j
   @Configuration(proxyBeanMethods = false)
   @ConditionalOnClass(Hooks.class)
   static class ReactorTracingConfiguration {
+
     @Bean
     public ApplicationListener<ApplicationStartedEvent> tracingBootstrap() {
       return _ -> {
@@ -73,7 +79,7 @@ public class TracingAutoConfiguration {
   static class ReactiveTracingConfiguration {
     @Bean
     public TraceIdWebFilter traceIdWebFilter(ObjectProvider<Tracer> tracerProvider) {
-      return new TraceIdWebFilter(tracerProvider.getIfAvailable());
+      return new TraceIdWebFilter(Objects.requireNonNull(tracerProvider.getIfAvailable()));
     }
   }
 }

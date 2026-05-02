@@ -13,7 +13,7 @@
   <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
     <withJansi>true</withJansi>
     <encoder>
-      <pattern>%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%-5level) %clr(---){faint} %clr([%15.15thread]){faint} [%clr(traceId=%X{traceId:-none}){blue}, %clr(spanId=%X{spanId:-none}){blue}, %clr(userId=%X{userId:-none}){yellow}] %clr(%-40.40logger{39}){cyan} %clr(:){faint} %msg%n</pattern>
+      <pattern>%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%-5level) %clr(---){faint} %clr([%15.15thread]){faint} [traceId=%clr(%X{traceId:-none}){blue}, spanId=%clr(%X{spanId:-none}){cyan}, userId=%clr(%X{userId:-none}){green}] %clr(%-40.40logger{39}){cyan} %clr(:){faint} %msg%n</pattern>
       <charset>UTF-8</charset>
     </encoder>
   </appender>
